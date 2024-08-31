@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-from typing import Any, Callable, Iterable, Optional, Protocol, Sequence, Union
+from typing import Any, Callable, Optional, Protocol, Sequence, Union
 
 import numpy as np
 from scipy.stats import randint, rv_continuous, rv_discrete, uniform
@@ -208,6 +208,11 @@ def create_continuous_uniform_variables(
 
 
 class Variable(Protocol):
+
+    @property
+    def distribution(self) -> rv_frozen:
+        """Distribution of the variable"""
+
     def value_of(
         self, probability: Union[float, np.ndarray]
     ) -> Union[float, np.ndarray]:
