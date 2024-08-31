@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-from typing import Any, Callable, Iterable, Optional, Protocol, Sequence, Union
+from typing import Any, Callable, Optional, Protocol, Sequence, Union
 
 import numpy as np
 from scipy.stats import randint, rv_continuous, rv_discrete, uniform
