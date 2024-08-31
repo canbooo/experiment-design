@@ -208,6 +208,11 @@ def create_continuous_uniform_variables(
 
 
 class Variable(Protocol):
+
+    @property
+    def distribution(self) -> rv_frozen:
+        """Distribution of the variable"""
+
     def value_of(
         self, probability: Union[float, np.ndarray]
     ) -> Union[float, np.ndarray]:
