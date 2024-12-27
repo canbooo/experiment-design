@@ -1,5 +1,3 @@
-from typing import Optional, Union
-
 import numpy as np
 from scipy.linalg import solve_triangular
 
@@ -7,8 +5,8 @@ from scipy.linalg import solve_triangular
 def iman_connover_transformation(
     doe: np.ndarray,
     target_correlation: np.ndarray,
-    means: Optional[np.ndarray] = None,
-    standard_deviations: Optional[np.ndarray] = None,
+    means: np.ndarray | None = None,
+    standard_deviations: np.ndarray | None = None,
 ) -> np.ndarray:
     """Rearrange the values of doe to reduce correlation error while keeping the Latin hypercube constraint"""
     # See Chapter 4.3.2 of
@@ -23,8 +21,8 @@ def iman_connover_transformation(
 def second_moment_transformation(
     doe: np.ndarray,
     target_correlation: np.ndarray,
-    means: Union[float, np.ndarray],
-    standard_deviations: Optional[np.ndarray] = None,
+    means: float | np.ndarray,
+    standard_deviations: np.ndarray | None = None,
 ) -> np.ndarray:
     """Second-moment transformation for achieving the target covariance"""
     if means is None:

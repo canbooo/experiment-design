@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-from typing import Any, Callable, Optional, Protocol, Sequence, Union
+from typing import Any, Callable, Protocol, Sequence
 
 import numpy as np
 from scipy.stats import randint, rv_continuous, rv_discrete, uniform
@@ -47,9 +47,9 @@ def _create_distribution_representation(distribution: rv_frozen) -> str:
 class ContinuousVariable:
     """A variable with continuous distribution"""
 
-    distribution: Optional[rv_frozen] = None
-    lower_bound: Optional[float] = None
-    upper_bound: Optional[float] = None
+    distribution: rv_frozen | None = None
+    lower_bound: float | None = None
+    upper_bound: float | None = None
     infinite_bound_probability_tolerance: float = 1e-6
 
     def __post_init__(self) -> None:
@@ -70,16 +70,14 @@ class ContinuousVariable:
         if not _is_frozen_continuous(self.distribution):
             raise ValueError("Only frozen continuous distributions are supported.")
 
-    def value_of(
-        self, probability: Union[float, np.ndarray]
-    ) -> Union[float, np.ndarray]:
+    def value_of(self, probability: float | np.ndarray) -> float | np.ndarray:
         """Given a probability or an array of probabilities return the corresponding value(s) using the inverse cdf."""
         values = self.distribution.ppf(probability)
         if self.upper_bound is not None or self.lower_bound is not None:
             return np.clip(values, self.lower_bound, self.upper_bound)
         return values
 
-    def cdf_of(self, value: Union[float, np.ndarray]) -> Union[float, np.ndarray]:
+    def cdf_of(self, value: float | np.ndarray) -> float | np.ndarray:
         """Given a value or an array of values return the probability using the cdf."""
         return self.distribution.cdf(value)
 
@@ -117,8 +115,8 @@ class DiscreteVariable:
     """A variable with discrete distribution"""
 
     distribution: rv_frozen
-    value_mapper: Callable[[float], Union[float, int]] = lambda x: x
-    inverse_value_mapper: Callable[[float, int], Union[float]] = lambda x: x
+    value_mapper: Callable[[float], float | int] = lambda x: x
+    inverse_value_mapper: Callable[[float, int], float] = lambda x: x
     infinite_bound_probability_tolerance: float = 1e-6
 
     def __post_init__(self) -> None:
@@ -127,14 +125,12 @@ class DiscreteVariable:
         self.value_mapper = np.vectorize(self.value_mapper)
         self.inverse_value_mapper = np.vectorize(self.inverse_value_mapper)
 
-    def value_of(
-        self, probability: Union[float, np.ndarray]
-    ) -> Union[float, np.ndarray]:
+    def value_of(self, probability: float | np.ndarray) -> float | np.ndarray:
         """Given a probability or an array of probabilities return the corresponding value(s) using the inverse cdf."""
         values = self.distribution.ppf(probability)
         return self.value_mapper(values)
 
-    def cdf_of(self, values: Union[float, np.ndarray]) -> Union[float, np.ndarray]:
+    def cdf_of(self, values: float | np.ndarray) -> float | np.ndarray:
         """Given a value or an array of values return the probability using the cdf."""
         return self.distribution.cdf(self.inverse_value_mapper(values))
 
@@ -164,7 +160,7 @@ class DiscreteVariable:
 
 
 def create_discrete_uniform_variables(
-    discrete_sets: list[list[Union[int, float, str]]]
+    discrete_sets: list[list[int | float | str]],
 ) -> list[DiscreteVariable]:
     """Given sets of possible values, create corresponding discrete variables with equal probability of each value."""
     variables = []
@@ -213,12 +209,10 @@ class Variable(Protocol):
     def distribution(self) -> rv_frozen:
         """Distribution of the variable"""
 
-    def value_of(
-        self, probability: Union[float, np.ndarray]
-    ) -> Union[float, np.ndarray]:
+    def value_of(self, probability: float | np.ndarray) -> float | np.ndarray:
         """Given a probability or an array of probabilities return the corresponding value(s) using the inverse cdf."""
 
-    def cdf_of(self, value: Union[float, np.ndarray]) -> Union[float, np.ndarray]:
+    def cdf_of(self, value: float | np.ndarray) -> float | np.ndarray:
         """Given a value or an array of values return the probability using the cdf."""
 
     @property

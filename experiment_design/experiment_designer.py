@@ -1,5 +1,4 @@
 import abc
-from typing import Optional
 
 import numpy as np
 
@@ -23,7 +22,7 @@ class ExperimentDesigner(abc.ABC):
         for more details.
     """
 
-    def __init__(self, scorer_factory: Optional[ScorerFactory] = None) -> None:
+    def __init__(self, scorer_factory: ScorerFactory | None = None) -> None:
         if scorer_factory is None:
             scorer_factory = create_default_scorer_factory()
         self.scorer_factory = scorer_factory
@@ -32,8 +31,8 @@ class ExperimentDesigner(abc.ABC):
         self,
         variables: VariableCollection,
         sample_size: int,
-        old_sample: Optional[np.ndarray] = None,
-        steps: Optional[int] = None,
+        old_sample: np.ndarray | None = None,
+        steps: int | None = None,
         initial_optimization_proportion: float = DEFAULT_INITIAL_OPTIMIZATION_PROPORTION,
         verbose: int = 0,
     ) -> np.ndarray:
@@ -99,7 +98,7 @@ class ExperimentDesigner(abc.ABC):
 
 def calculate_optimization_step_numbers(
     sample_size: int,
-    steps: Optional[int] = None,
+    steps: int | None = None,
     proportion: float = DEFAULT_INITIAL_OPTIMIZATION_PROPORTION,
 ) -> tuple[int, int]:
     """
