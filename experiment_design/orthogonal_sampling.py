@@ -26,9 +26,9 @@ class OrthogonalSamplingDesigner(ExperimentDesigner):
     bins of equal marginal probability and places samples such that each bin is only filled once for each dimension.
     If all variables are uniform, orthogonal sampling becomes a Latin hypercube sampling.
 
-    :param target_correlation: A symmetric matrix with shape (len(variables), len(variables)), representing the linear
-        dependency between the dimensions. If a float, all non-diagonal entries of the unit matrix will be set to this
-        value.
+    :param target_correlation: A float or asymmetric matrix with shape (len(variables), len(variables)), representing the
+        linear dependency between the dimensions. If a float is passed, all non-diagonal entries of the unit matrix will
+        be set to this value.
     :param inter_bin_randomness: Controls the randomness of placed points between the bin bounds. Specifically, 0. means that
         the points are placed at the center of each bin, whereas 1. leads to a random point placement within the bounds.
         Any other fractions leads to a random placement within that fraction of the bin bounds in each dimension.
