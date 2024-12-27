@@ -232,7 +232,7 @@ class Variable(Protocol):
 
 def create_variables_from_distributions(
     distributions: list[rv_frozen],
-) -> list[Variable]:
+) -> list[ContinuousVariable | DiscreteVariable]:
     """Given a list of distributions, create the corresponding continuous or discrete variables."""
     variables = []
     for dist in distributions:
