@@ -2,9 +2,9 @@ from functools import partial
 from typing import Callable, Optional, Union
 
 import numpy as np
-from scipy.linalg import solve_triangular
 from scipy.stats import uniform
 
+from experiment_design.covariance_modification import iman_connover_transformation
 from experiment_design.experiment_designer import ExperimentDesigner
 from experiment_design.optimize import (
     random_search,
@@ -189,43 +189,6 @@ def create_lhd_probabilities(
         return doe
     delta = inter_bin_randomness / sample_size
     return doe + uniform(-delta / 2, delta).rvs(size=(sample_size, num_variables))
-
-
-def iman_connover_transformation(
-    doe: np.ndarray,
-    target_correlation: np.ndarray,
-    means: Optional[np.ndarray] = None,
-    standard_deviations: Optional[np.ndarray] = None,
-) -> np.ndarray:
-    """Rearrange the values of doe to reduce correlation error while keeping the Latin hypercube constraint"""
-    # See Chapter 4.3.2 of
-    # Local Latin Hypercube Refinement for Uncertainty Quantification and Optimization, Can Bogoclu, (2022)
-    if means is None:
-        means = np.mean(doe, axis=0)
-    if standard_deviations is None:
-        standard_deviations = np.std(doe, axis=0, keepdims=True)
-        standard_deviations = standard_deviations.reshape((1, -1))
-    target_covariance = (
-        standard_deviations.T.dot(standard_deviations) * target_correlation
-    )
-
-    transformed = second_moment_transformation(doe, means, target_covariance)
-    order = np.argsort(np.argsort(transformed, axis=0), axis=0)
-    return np.take_along_axis(np.sort(doe, axis=0), order, axis=0)
-
-
-def second_moment_transformation(
-    doe: np.ndarray,
-    means: Union[float, np.ndarray],
-    target_covariance: np.ndarray,
-) -> np.ndarray:
-    """Second-moment transformation for achieving the target covariance"""
-    target_cov_upper = np.linalg.cholesky(
-        target_covariance
-    ).T  # convert to covariance before Cholesky
-    cur_cov_upper = np.linalg.cholesky(np.cov(doe, rowvar=False)).T
-    inv_cov_upper = solve_triangular(cur_cov_upper, target_cov_upper)
-    return (doe - means).dot(inv_cov_upper) + means
 
 
 def _find_sufficient_empty_bins(
