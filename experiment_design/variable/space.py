@@ -2,18 +2,31 @@ from dataclasses import dataclass, field
 
 import numpy as np
 
-from experiment_design.variable import Variable
+# Following is ugly, but it is scipy's fault for not exposing rv_frozen
+# noinspection PyProtectedMember
+from scipy.stats._distn_infrastructure import rv_frozen
+
+from experiment_design import variable
 
 
 @dataclass
 class DesignSpace:
     """A container of multiple variables defining a design space."""
 
-    variables: list[Variable]
+    variables: (
+        list[
+            variable.Variable | variable.ContinuousVariable | variable.DiscreteVariable
+        ]
+        | list[rv_frozen]
+    )
     _lower_bound: np.ndarray = field(init=False, repr=False, default=None)
     _upper_bound: np.ndarray = field(init=False, repr=False, default=None)
 
     def __post_init__(self) -> None:
+        if isinstance(self.variables[0], rv_frozen):
+            self.variables = variable.create_variables_from_distributions(
+                self.variables
+            )
         lower, upper = [], []
         for var in self.variables:
             lower.append(var.finite_lower_bound)
@@ -25,8 +38,8 @@ class DesignSpace:
         if len(values.shape) != 2:
             values = values.reshape((-1, len(self.variables)))
         results = np.zeros(values.shape)
-        for i_dim, variable in enumerate(self.variables):
-            results[:, i_dim] = getattr(variable, attribute)(values[:, i_dim])
+        for i_dim, design_variable in enumerate(self.variables):
+            results[:, i_dim] = getattr(design_variable, attribute)(values[:, i_dim])
         return results
 
     def value_of(self, probabilities: np.ndarray) -> np.ndarray:
@@ -57,4 +70,4 @@ class DesignSpace:
         return self.dimensions
 
 
-VariableCollection = list[Variable] | DesignSpace
+VariableCollection = list[variable.Variable] | DesignSpace
