@@ -1,5 +1,3 @@
-from typing import Optional
-
 import matplotlib as mpl
 import matplotlib.pyplot as plt
 import numpy as np
@@ -12,7 +10,7 @@ from experiment_design.variable import create_continuous_uniform_variables
 
 def create_iterative_plot(
     step_does: list[np.ndarray],
-    step_grids: Optional[list[np.ndarray]] = None,
+    step_grids: list[np.ndarray] | None = None,
 ):
     fig, ax = plt.subplots(figsize=(7, 7))
     colors = []

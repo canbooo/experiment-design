@@ -1,4 +1,4 @@
-from typing import Callable, Iterable, Optional, Protocol, Union
+from typing import Callable, Iterable, Protocol
 
 import numpy as np
 from scipy.spatial.distance import pdist
@@ -24,7 +24,7 @@ class ScorerFactory(Protocol):
         self,
         variables: VariableCollection,
         sample_size: int,
-        old_sample: Optional[np.ndarray] = None,
+        old_sample: np.ndarray | None = None,
     ) -> Scorer:
         """Given variables and sample size, create a scoring function"""
         ...
@@ -44,7 +44,7 @@ class MaxCorrelationScorerFactory:
 
     def __init__(
         self,
-        target_correlation: Union[float, np.ndarray] = 0,
+        target_correlation: float | np.ndarray = 0,
         local: bool = True,
         eps: float = 1e-2,
     ) -> None:
@@ -62,7 +62,7 @@ class MaxCorrelationScorerFactory:
         self,
         variables: VariableCollection,
         sample_size: int,
-        old_sample: Optional[np.ndarray] = None,
+        old_sample: np.ndarray | None = None,
     ) -> Scorer:
         """
         Creates a scorer, that computes the maximum absolute correlation error between the candidate samples
@@ -115,7 +115,7 @@ class PairwiseDistanceScorerFactory:
         self,
         variables: VariableCollection,
         sample_size: int,
-        old_sample: Optional[np.ndarray] = None,
+        old_sample: np.ndarray | None = None,
     ) -> Scorer:
         """
         Create a scorer, that computes the minimum pairwise distance between sampling points.s
@@ -164,7 +164,7 @@ class WeightedSumScorerFactory:
         self,
         variables: VariableCollection,
         sample_size: int,
-        old_sample: Optional[np.ndarray] = None,
+        old_sample: np.ndarray | None = None,
     ) -> Scorer:
 
         scorers = [
@@ -181,7 +181,7 @@ class WeightedSumScorerFactory:
 
 
 def create_default_scorer_factory(
-    target_correlation: Union[np.ndarray, float] = 0.0,
+    target_correlation: float | np.ndarray = 0.0,
     distance_score_weight: float = 0.9,
     correlation_score_weight: float = 0.1,
     local_correlation: bool = True,
@@ -221,8 +221,8 @@ def calculate_equidistant_bin_diagonal_length(
 
 
 def create_correlation_matrix(
-    target_correlation: Union[np.ndarray, float] = 0.0,
-    num_variables: Optional[int] = None,
+    target_correlation: float | np.ndarray = 0.0,
+    num_variables: int | None = None,
 ) -> np.ndarray:
     """Create a correlation matrix from the target correlation in case it is a float"""
     if not np.isscalar(target_correlation):
@@ -239,7 +239,7 @@ def create_correlation_matrix(
 
 def create_old_doe_handler(
     variables: VariableCollection,
-    old_sample: Optional[np.ndarray] = None,
+    old_sample: np.ndarray | None = None,
     local: bool = False,
 ) -> Callable[[np.ndarray], np.ndarray]:
     """

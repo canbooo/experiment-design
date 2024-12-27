@@ -1,5 +1,5 @@
 from functools import partial
-from typing import Callable, Optional, Union
+from typing import Callable
 
 import numpy as np
 from scipy.stats import uniform
@@ -45,10 +45,10 @@ class OrthogonalSamplingDesigner(ExperimentDesigner):
 
     def __init__(
         self,
-        target_correlation: Union[np.ndarray, float] = 0.0,
+        target_correlation: float | np.ndarray = 0.0,
         inter_bin_randomness: float = 1.0,
         non_occupied_bins: bool = False,
-        scorer_factory: Optional[ScorerFactory] = None,
+        scorer_factory: ScorerFactory | None = None,
     ) -> None:
         self.target_correlation = target_correlation
         self.inter_bin_randomness = inter_bin_randomness

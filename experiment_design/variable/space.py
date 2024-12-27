@@ -1,5 +1,4 @@
 from dataclasses import dataclass, field
-from typing import Union
 
 import numpy as np
 
@@ -58,4 +57,4 @@ class DesignSpace:
         return self.dimensions
 
 
-VariableCollection = Union[list[Variable], DesignSpace]
+VariableCollection = list[Variable] | DesignSpace
