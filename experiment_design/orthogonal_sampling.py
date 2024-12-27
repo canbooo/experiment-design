@@ -160,6 +160,7 @@ def create_orthogonal_design(
         variables = DesignSpace(variables)
     # Sometimes, we may randomly generate probabilities with
     # singular correlation matrices. Try 3 times to avoid issue until we give up
+    error_text = ""
     for k in range(3):
         probabilities = create_lhd_probabilities(
             len(variables), sample_size, inter_bin_randomness=inter_bin_randomness
@@ -167,10 +168,10 @@ def create_orthogonal_design(
         doe = variables.value_of(probabilities)
         try:
             return iman_connover_transformation(doe, target_correlation)
-        except np.linalg.LinAlgError:
+        except np.linalg.LinAlgError as exc:
+            error_text = str(exc)
             pass
-
-    return doe
+    raise np.linalg.LinAlgError(error_text)
 
 
 def create_lhd_probabilities(
