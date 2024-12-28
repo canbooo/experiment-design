@@ -98,4 +98,4 @@ class DesignSpace:
         return self.dimensions
 
 
-VariableCollection = list[variable.Variable] | DesignSpace
+VariableCollection = list[rv_frozen] | list[variable.Variable] | DesignSpace
