@@ -5,7 +5,10 @@ from cycler import cycler
 from scipy.spatial.distance import pdist
 
 from experiment_design.orthogonal_sampling import OrthogonalSamplingDesigner
-from experiment_design.variable import create_continuous_uniform_variables
+from experiment_design.variable import (
+    ParameterSpace,
+    create_continuous_uniform_variables,
+)
 
 
 def create_iterative_plot(
@@ -54,13 +57,14 @@ if __name__ == "__main__":
     sample_size = 4  # For initial DoE
     lb, ub = -2, 2
     variables = create_continuous_uniform_variables([lb, lb], [ub, ub])
+    space = ParameterSpace(variables)
     designer = OrthogonalSamplingDesigner(inter_bin_randomness=0.8)
 
     does, grids = [], []
     old_sample = None
     for i_step in range(9):
         new_sample = designer.design(
-            variables, sample_size, steps=1000, old_sample=old_sample, verbose=2
+            space, sample_size, steps=1000, old_sample=old_sample, verbose=2
         )
         does.append(new_sample)
         sample_size = 1  # For all extensions
