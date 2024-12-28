@@ -5,11 +5,12 @@ from cycler import cycler
 from scipy.spatial.distance import pdist
 
 from experiment_design.orthogonal_sampling import OrthogonalSamplingDesigner
-from experiment_design.scorers import (
+from experiment_design.scorers import create_default_scorer_factory
+from experiment_design.variable import (
+    ParameterSpace,
+    create_continuous_uniform_variables,
     create_correlation_matrix,
-    create_default_scorer_factory,
 )
-from experiment_design.variable import create_continuous_uniform_variables
 
 
 def create_iterative_plot(
@@ -71,10 +72,10 @@ if __name__ == "__main__":
             scorer_factory=create_default_scorer_factory(
                 correlation_score_weight=0.9,
                 distance_score_weight=0.1,
-                target_correlation=corr,
             )
         )
-        new_doe = designer.design(variables, sample_size, steps=1000, verbose=2)
+        space = ParameterSpace(variables, correlation=corr)
+        new_doe = designer.design(space, sample_size, steps=1000, verbose=2)
         does.append(new_doe)
         new_grid = np.linspace(lb, ub, new_doe.shape[0] + 1)
         grids.append(new_grid)

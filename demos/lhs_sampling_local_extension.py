@@ -6,7 +6,10 @@ from scipy.spatial.distance import pdist
 
 from experiment_design.orthogonal_sampling import OrthogonalSamplingDesigner
 from experiment_design.scorers import create_default_scorer_factory, select_local
-from experiment_design.variable import create_continuous_uniform_variables
+from experiment_design.variable import (
+    ParameterSpace,
+    create_continuous_uniform_variables,
+)
 
 
 def create_iterative_plot(
@@ -62,9 +65,10 @@ if __name__ == "__main__":
     for i_step, ub in enumerate([2, 1.5, 1.0, 0.5]):
         lb = -ub
         variables = create_continuous_uniform_variables([lb, lb], [ub, ub])
+        space = ParameterSpace(variables)
         sample_size = max(start_sample_size * 2 ** (i_step - 1), start_sample_size)
         new_sample = designer.design(
-            variables, sample_size, steps=1000, old_sample=old_sample, verbose=2
+            space, sample_size, steps=1000, old_sample=old_sample, verbose=2
         )
         does.append(new_sample)
 
@@ -72,7 +76,7 @@ if __name__ == "__main__":
             new_doe = new_sample
         else:
             new_doe = np.append(old_sample, new_sample, axis=0)
-        local_doe = select_local(new_doe, variables)
+        local_doe = select_local(new_doe, space)
         new_grid = np.linspace(lb, ub, local_doe.shape[0] + 1)
         grids.append(new_grid)
         old_sample = np.concatenate(does, axis=0)

@@ -10,14 +10,9 @@ from experiment_design.optimize import (
     random_search,
     simulated_annealing_by_perturbation,
 )
-from experiment_design.scorers import (
-    Scorer,
-    ScorerFactory,
-    create_correlation_matrix,
-    create_default_scorer_factory,
-    select_local,
-)
-from experiment_design.variable import DesignSpace, VariableCollection
+from experiment_design.scorers import Scorer, ScorerFactory, select_local
+from experiment_design.variable import ParameterSpace, VariableCollection
+from experiment_design.variable.space import create_correlation_matrix
 
 
 class OrthogonalSamplingDesigner(ExperimentDesigner):
@@ -26,9 +21,6 @@ class OrthogonalSamplingDesigner(ExperimentDesigner):
     bins of equal marginal probability and places samples such that each bin is only filled once for each dimension.
     If all variables are uniform, orthogonal sampling becomes a Latin hypercube sampling.
 
-    :param target_correlation: A float or asymmetric matrix with shape (len(variables), len(variables)), representing the
-        linear dependency between the dimensions. If a float is passed, all non-diagonal entries of the unit matrix will
-        be set to this value.
     :param inter_bin_randomness: Controls the randomness of placed points between the bin bounds. Specifically, 0. means that
         the points are placed at the center of each bin, whereas 1. leads to a random point placement within the bounds.
         Any other fractions leads to a random placement within that fraction of the bin bounds in each dimension.
@@ -45,41 +37,31 @@ class OrthogonalSamplingDesigner(ExperimentDesigner):
 
     def __init__(
         self,
-        target_correlation: float | np.ndarray = 0.0,
         inter_bin_randomness: float = 1.0,
         non_occupied_bins: bool = False,
         scorer_factory: ScorerFactory | None = None,
     ) -> None:
-        self.target_correlation = target_correlation
         self.inter_bin_randomness = inter_bin_randomness
         if non_occupied_bins:
             self.empty_size_check = np.min
         else:
             self.empty_size_check = np.max
-        if scorer_factory is None:
-            scorer_factory = create_default_scorer_factory(
-                target_correlation=target_correlation
-            )
         super(OrthogonalSamplingDesigner, self).__init__(scorer_factory=scorer_factory)
 
     def _create(
         self,
-        variables: DesignSpace,
+        space: ParameterSpace,
         sample_size: int,
         scorer: Scorer,
         initial_steps: int,
         final_steps: int,
         verbose: int,
     ) -> np.ndarray:
-        target_correlation = create_correlation_matrix(
-            self.target_correlation, num_variables=variables.dimensions
-        )
         if (initial_steps + final_steps) <= 2:
             # Enable faster use cases:
             return create_orthogonal_design(
-                variables=variables,
+                space=space,
                 sample_size=sample_size,
-                target_correlation=target_correlation,
                 inter_bin_randomness=self.inter_bin_randomness,
             )
 
@@ -88,9 +70,8 @@ class OrthogonalSamplingDesigner(ExperimentDesigner):
         doe = random_search(
             creator=partial(
                 create_orthogonal_design,
-                variables=variables,
+                space=space,
                 sample_size=sample_size,
-                target_correlation=target_correlation,
                 inter_bin_randomness=self.inter_bin_randomness,
             ),
             scorer=scorer,
@@ -106,15 +87,15 @@ class OrthogonalSamplingDesigner(ExperimentDesigner):
     def _extend(
         self,
         old_sample: np.ndarray,
-        variables: DesignSpace,
+        space: ParameterSpace,
         sample_size: int,
         scorer: Scorer,
         initial_steps: int,
         final_steps: int,
         verbose: int,
     ) -> np.ndarray:
-        local_doe = select_local(old_sample, variables)
-        probabilities = variables.cdf_of(local_doe)
+        local_doe = select_local(old_sample, space)
+        probabilities = space.cdf_of(local_doe)
         if not np.all(np.isfinite(probabilities)):
             raise RuntimeError(
                 "Non-finite probability encountered. Please check the distributions."
@@ -134,7 +115,7 @@ class OrthogonalSamplingDesigner(ExperimentDesigner):
             creator=partial(
                 _create_candidates_from,
                 empty_bins=empty,
-                variables=variables,
+                variables=space,
                 sample_size=sample_size,
                 inter_bin_randomness=self.inter_bin_randomness,
             ),
@@ -150,24 +131,21 @@ class OrthogonalSamplingDesigner(ExperimentDesigner):
 
 
 def create_orthogonal_design(
-    variables: VariableCollection,
+    space: ParameterSpace,
     sample_size: int,
-    target_correlation: np.ndarray,
     inter_bin_randomness: float = 1.0,
 ) -> np.ndarray:
     """Create an orthogonal design without any optimization."""
-    if not isinstance(variables, DesignSpace):
-        variables = DesignSpace(variables)
     # Sometimes, we may randomly generate probabilities with
     # singular correlation matrices. Try 3 times to avoid issue until we give up
     error_text = ""
     for k in range(3):
         probabilities = create_lhd_probabilities(
-            len(variables), sample_size, inter_bin_randomness=inter_bin_randomness
+            len(space), sample_size, inter_bin_randomness=inter_bin_randomness
         )
-        doe = variables.value_of(probabilities)
+        doe = space.value_of(probabilities)
         try:
-            return iman_connover_transformation(doe, target_correlation)
+            return iman_connover_transformation(doe, space.correlation)
         except np.linalg.LinAlgError as exc:
             error_text = str(exc)
             pass
@@ -230,7 +208,7 @@ def _find_empty_bins(probabilities: np.ndarray, bins_per_dimension: int) -> np.n
 
 def _create_candidates_from(
     empty_bins: np.ndarray,
-    variables: DesignSpace,
+    variables: ParameterSpace,
     sample_size: int,
     inter_bin_randomness: float = 1.0,
 ) -> np.ndarray:

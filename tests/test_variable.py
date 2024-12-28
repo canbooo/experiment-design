@@ -27,9 +27,9 @@ def standard_normal() -> module_under_test.ContinuousVariable:
     ),
     ids=("Continuous", "Mixed", "Discrete"),
 )
-def design_space(request) -> experiment_design.variable.space.DesignSpace:
+def design_space(request) -> experiment_design.variable.space.ParameterSpace:
     variables = module_under_test.create_variables_from_distributions(request.param)
-    return experiment_design.variable.space.DesignSpace(variables)
+    return experiment_design.variable.space.ParameterSpace(variables)
 
 
 def test_is_frozen_discrete():
@@ -176,9 +176,11 @@ class TestDiscreteVariable:
         assert discrete_bernoulli.finite_upper_bound == 666
 
 
-class TestDesignSpace:
+class TestParameterSpace:
 
-    def test_value_of(self, design_space: experiment_design.variable.space.DesignSpace):
+    def test_value_of(
+        self, design_space: experiment_design.variable.space.ParameterSpace
+    ):
         probabilities = np.array([[0.1, 0.1], [0.5, 0.6], [0.9, 0.8]])
         if isinstance(design_space.variables[0], module_under_test.DiscreteVariable):
             # Both are discrete
@@ -192,13 +194,13 @@ class TestDesignSpace:
         assert np.all(np.isclose(design_space.value_of(probabilities), expected))
 
     def test_design_space_size_getters(
-        self, design_space: experiment_design.variable.space.DesignSpace
+        self, design_space: experiment_design.variable.space.ParameterSpace
     ):
         assert design_space.dimensions == 2
         assert len(design_space) == 2
 
     def test_design_space_lower_bound(
-        self, design_space: experiment_design.variable.space.DesignSpace
+        self, design_space: experiment_design.variable.space.ParameterSpace
     ):
         if isinstance(design_space.variables[0], module_under_test.DiscreteVariable):
             # Both are discrete
@@ -212,7 +214,7 @@ class TestDesignSpace:
         assert all(design_space.lower_bound == expected)
 
     def test_design_space_upper_bound(
-        self, design_space: experiment_design.variable.space.DesignSpace
+        self, design_space: experiment_design.variable.space.ParameterSpace
     ):
         if isinstance(design_space.variables[0], module_under_test.DiscreteVariable):
             # Both are discrete
