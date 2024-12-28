@@ -7,7 +7,7 @@ from experiment_design.scorers import (
     ScorerFactory,
     create_default_scorer_factory,
 )
-from experiment_design.variable import ParameterSpace, VariableCollection
+from experiment_design.variable import ParameterSpace
 
 DEFAULT_INITIAL_OPTIMIZATION_PROPORTION = 0.1
 

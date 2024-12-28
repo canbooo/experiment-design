@@ -21,7 +21,7 @@ def iman_connover_transformation(
 def second_moment_transformation(
     doe: np.ndarray,
     target_correlation: np.ndarray,
-    means: float | np.ndarray,
+    means: np.ndarray | None = None,
     standard_deviations: np.ndarray | None = None,
 ) -> np.ndarray:
     """Second-moment transformation for achieving the target covariance"""

@@ -11,8 +11,7 @@ from experiment_design.covariance_modification import (
 from experiment_design.experiment_designer import ExperimentDesigner
 from experiment_design.optimize import random_search
 from experiment_design.scorers import Scorer
-from experiment_design.variable import ParameterSpace, VariableCollection
-from experiment_design.variable.space import create_correlation_matrix
+from experiment_design.variable import ParameterSpace
 
 
 class RandomSamplingDesigner(ExperimentDesigner):
@@ -112,7 +111,7 @@ def sample_from(
         doe = space.value_of(doe)
 
         if (
-            np.isclose(space.correlation == np.eye(len(space)))
+            np.isclose(space.correlation, np.eye(len(space))).all()
             and not exact_correlation
         ):
             return doe

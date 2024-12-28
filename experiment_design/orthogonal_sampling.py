@@ -11,8 +11,7 @@ from experiment_design.optimize import (
     simulated_annealing_by_perturbation,
 )
 from experiment_design.scorers import Scorer, ScorerFactory, select_local
-from experiment_design.variable import ParameterSpace, VariableCollection
-from experiment_design.variable.space import create_correlation_matrix
+from experiment_design.variable import ParameterSpace
 
 
 class OrthogonalSamplingDesigner(ExperimentDesigner):

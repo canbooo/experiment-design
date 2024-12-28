@@ -2,7 +2,6 @@ import matplotlib as mpl
 import matplotlib.pyplot as plt
 import numpy as np
 from cycler import cycler
-from scipy.spatial.distance import pdist
 
 from experiment_design.orthogonal_sampling import OrthogonalSamplingDesigner
 from experiment_design.scorers import create_default_scorer_factory
@@ -39,7 +38,6 @@ def create_title(doe, target_corr):
         target_correlation=target_corr, num_variables=doe.shape[1]
     )
     corr_error = np.max(np.abs(np.corrcoef(doe, rowvar=False) - target_corr_mat))
-    min_dist = np.min(pdist(doe))
     return f"Target correlation: {target_corr} Max. correlation error: {corr_error:.3f}"
 
 

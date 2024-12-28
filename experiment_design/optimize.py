@@ -164,13 +164,9 @@ class _MatrixRowSwitchCache:
         self._cache = [np.zeros((0, 2), dtype=int) for _ in range(self.column_size)]
 
     def choose_column(self) -> int:
-        try:
-            return np.random.choice(
-                np.where(self._cache_sizes < self._max_switches_per_column)[0]
-            )
-        except:
-            print(np.where(self._cache_sizes < self._max_switches_per_column)[0])
-            pass
+        return np.random.choice(
+            np.where(self._cache_sizes < self._max_switches_per_column)[0]
+        )
 
     def choose_rows(self, column: int) -> tuple[int, int]:
         def choose_non_occupied(occupied: set[int]) -> int:
