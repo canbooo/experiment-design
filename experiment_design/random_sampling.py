@@ -112,7 +112,7 @@ def sample_from(
         doe = space.value_of(doe)
 
         if (
-            np.isclose(space.correlation == np.eye(len(space)))
+            np.isclose(space.correlation, np.eye(len(space))).all()
             and not exact_correlation
         ):
             return doe
