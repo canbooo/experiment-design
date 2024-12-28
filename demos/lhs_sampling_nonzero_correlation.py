@@ -5,11 +5,11 @@ from cycler import cycler
 from scipy.spatial.distance import pdist
 
 from experiment_design.orthogonal_sampling import OrthogonalSamplingDesigner
-from experiment_design.scorers import (
+from experiment_design.scorers import create_default_scorer_factory
+from experiment_design.variable import (
+    create_continuous_uniform_variables,
     create_correlation_matrix,
-    create_default_scorer_factory,
 )
-from experiment_design.variable import create_continuous_uniform_variables
 
 
 def create_iterative_plot(

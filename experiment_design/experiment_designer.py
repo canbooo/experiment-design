@@ -7,7 +7,7 @@ from experiment_design.scorers import (
     ScorerFactory,
     create_default_scorer_factory,
 )
-from experiment_design.variable import DesignSpace, VariableCollection
+from experiment_design.variable import ParameterSpace, VariableCollection
 
 DEFAULT_INITIAL_OPTIMIZATION_PROPORTION = 0.1
 
@@ -29,7 +29,7 @@ class ExperimentDesigner(abc.ABC):
 
     def design(
         self,
-        variables: VariableCollection,
+        space: ParameterSpace,
         sample_size: int,
         old_sample: np.ndarray | None = None,
         steps: int | None = None,
@@ -39,7 +39,7 @@ class ExperimentDesigner(abc.ABC):
         """
         Create or extend a design of experiments (DoE).
 
-        :param variables: Determines the dimensions of the resulting sample.
+        :param space: Determines the dimensions of the resulting sample.
         :param sample_size: the number of points to be created.
         :param old_sample: Old DoE matrix with shape (len(variables), old_sample_size). If provided,
             it will be extended with sample_size new points, otherwise a new DoE will be created.
@@ -50,19 +50,17 @@ class ExperimentDesigner(abc.ABC):
         :param verbose: Controls print messages. 2 leads to maximum verbosity,
         :return: DoE matrix with shape (len(variables), samples_size)
         """
-        if not isinstance(variables, DesignSpace):
-            variables = DesignSpace(variables)
-        scorer = self.scorer_factory(variables, sample_size, old_sample=old_sample)
+        scorer = self.scorer_factory(space, sample_size, old_sample=old_sample)
         initial_steps, final_steps = calculate_optimization_step_numbers(
             sample_size, steps, proportion=initial_optimization_proportion
         )
         if old_sample is None:
             return self._create(
-                variables, sample_size, scorer, initial_steps, final_steps, verbose
+                space, sample_size, scorer, initial_steps, final_steps, verbose
             )
         return self._extend(
             old_sample,
-            variables,
+            space,
             sample_size,
             scorer,
             initial_steps,
@@ -73,7 +71,7 @@ class ExperimentDesigner(abc.ABC):
     @abc.abstractmethod
     def _create(
         self,
-        variables: DesignSpace,
+        space: ParameterSpace,
         sample_size: int,
         scorer: Scorer,
         initial_steps: int,
@@ -86,7 +84,7 @@ class ExperimentDesigner(abc.ABC):
     def _extend(
         self,
         old_sample: np.ndarray,
-        variables: DesignSpace,
+        space: ParameterSpace,
         sample_size: int,
         scorer: Scorer,
         initial_steps: int,

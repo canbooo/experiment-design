@@ -10,16 +10,14 @@ from experiment_design.covariance_modification import (
 )
 from experiment_design.experiment_designer import ExperimentDesigner
 from experiment_design.optimize import random_search
-from experiment_design.scorers import Scorer, create_correlation_matrix
+from experiment_design.scorers import Scorer
 from experiment_design.variable import ParameterSpace, VariableCollection
+from experiment_design.variable.space import create_correlation_matrix
 
 
 class RandomSamplingDesigner(ExperimentDesigner):
     """Create or extend a design of experiments (DoE) by randomly sampling from the variable distributions.
 
-    :param target_correlation: A float or a symmetric matrix with shape (len(variables), len(variables)), representing
-    the linear dependency between the dimensions. If a float is passed, all non-diagonal entries of the unit matrix will
-    be set to this value.
     :param exact_correlation: If True, the correlation matrix of the resulting design will match the target correlation
     exactly using a second moment transformation. This may lead variables with finite bounds to generate values that are
     out of bounds. Otherwise, Iman-Connover method will be used, where the values will be kept as is for each variable
@@ -29,16 +27,14 @@ class RandomSamplingDesigner(ExperimentDesigner):
 
     def __init__(
         self,
-        target_correlation: np.ndarray | float = 0.0,
         exact_correlation: bool = False,
     ) -> None:
-        self.target_correlation = target_correlation
         self.exact_correlation = exact_correlation
         super(RandomSamplingDesigner, self).__init__()
 
     def _create(
         self,
-        variables: ParameterSpace,
+        space: ParameterSpace,
         sample_size: int,
         scorer: Scorer,
         initial_steps: int,
@@ -46,13 +42,11 @@ class RandomSamplingDesigner(ExperimentDesigner):
         verbose: int,
     ) -> np.ndarray:
         steps = initial_steps + final_steps
-        target_correlation = create_correlation_matrix(self.target_correlation)
         return random_search(
             creator=partial(
                 sample_from,
-                variables,
+                space,
                 sample_size,
-                target_correlation,
                 self.exact_correlation,
             ),
             scorer=scorer,
@@ -63,7 +57,7 @@ class RandomSamplingDesigner(ExperimentDesigner):
     def _extend(
         self,
         old_sample: np.ndarray,
-        variables: ParameterSpace,
+        space: ParameterSpace,
         sample_size: int,
         scorer: Scorer,
         initial_steps: int,
@@ -75,13 +69,11 @@ class RandomSamplingDesigner(ExperimentDesigner):
             "If the design space changes, "
             "random sampling may not handle correlation modification properly!"
         )
-        target_correlation = create_correlation_matrix(self.target_correlation)
         return random_search(
             creator=partial(
                 sample_from,
-                variables,
+                space,
                 sample_size,
-                target_correlation,
                 self.exact_correlation,
             ),
             scorer=scorer,
@@ -91,26 +83,23 @@ class RandomSamplingDesigner(ExperimentDesigner):
 
 
 def sample_from(
-    variables: VariableCollection,
+    space: ParameterSpace,
     sample_size: int,
-    target_correlation: np.ndarray | None = None,
     exact_correlation: bool = False,
 ) -> np.ndarray:
     """
     Sample from the distributions of the variables.
 
-    :param variables: Determines the dimensions of the resulting sample.
+    :param space: Determines the dimensions of the resulting sample.
     :param sample_size: the number of points to be created.
-    :param target_correlation: A symmetric matrix with shape (len(variables), len(variables)), representing the linear
     :param exact_correlation: If True, second moment transformation will be used, which may not respect the finite
     bounds of the marginal distributions. Otherwise, Iman-Connover method will be used, which may yield imprecise
     correlation matrices.
     :return: Sample matrix with shape (len(variables), samples_size).
     """
-    if not isinstance(variables, ParameterSpace):
-        variables = ParameterSpace(variables)
-        # Sometimes, we may randomly generate probabilities with
-        # singular correlation matrices. Try 3 times to avoid issue until we give up
+
+    # Sometimes, we may randomly generate probabilities with
+    # singular correlation matrices. Try 3 times to avoid issue until we give up
     error_text = ""
     transformer = (
         second_moment_transformation
@@ -118,19 +107,17 @@ def sample_from(
         else iman_connover_transformation
     )
     for k in range(3):
-        doe = uniform(0, 1).rvs((sample_size, len(variables)))
-        if not isinstance(variables, ParameterSpace):
-            variables = ParameterSpace(variables)
-        doe = variables.value_of(doe)
-        if target_correlation is None:
-            target_correlation = np.eye(len(variables))
+        doe = uniform(0, 1).rvs((sample_size, len(space)))
+
+        doe = space.value_of(doe)
+
         if (
-            np.all(target_correlation == np.eye(len(variables)))
+            np.isclose(space.correlation_matrix == np.eye(len(space)))
             and not exact_correlation
         ):
             return doe
         try:
-            return transformer(doe, target_correlation)
+            return transformer(doe, space.correlation_matrix)
         except np.linalg.LinAlgError as exc:
             error_text = str(exc)
             pass
