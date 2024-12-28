@@ -70,7 +70,7 @@ class OrthogonalSamplingDesigner(ExperimentDesigner):
         doe = random_search(
             creator=partial(
                 create_orthogonal_design,
-                variables=space,
+                space=space,
                 sample_size=sample_size,
                 inter_bin_randomness=self.inter_bin_randomness,
             ),
