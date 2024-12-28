@@ -11,8 +11,8 @@ from experiment_design.scorers import create_correlation_matrix
 
 
 @dataclass
-class DesignSpace:
-    """A container of multiple variables defining a design space.
+class ParameterSpace:
+    """A container of multiple variables defining a parameter space.
 
     :param variables: list of variables or marginal distributions that define the marginal parameters
     :param correlation_matrix: A float or asymmetric matrix with shape (len(variables), len(variables)), representing the
@@ -98,4 +98,4 @@ class DesignSpace:
         return self.dimensions
 
 
-VariableCollection = list[rv_frozen] | list[variable.Variable] | DesignSpace
+VariableCollection = list[rv_frozen] | list[variable.Variable] | ParameterSpace

@@ -11,7 +11,7 @@ from experiment_design.covariance_modification import (
 from experiment_design.experiment_designer import ExperimentDesigner
 from experiment_design.optimize import random_search
 from experiment_design.scorers import Scorer, create_correlation_matrix
-from experiment_design.variable import DesignSpace, VariableCollection
+from experiment_design.variable import ParameterSpace, VariableCollection
 
 
 class RandomSamplingDesigner(ExperimentDesigner):
@@ -38,7 +38,7 @@ class RandomSamplingDesigner(ExperimentDesigner):
 
     def _create(
         self,
-        variables: DesignSpace,
+        variables: ParameterSpace,
         sample_size: int,
         scorer: Scorer,
         initial_steps: int,
@@ -63,7 +63,7 @@ class RandomSamplingDesigner(ExperimentDesigner):
     def _extend(
         self,
         old_sample: np.ndarray,
-        variables: DesignSpace,
+        variables: ParameterSpace,
         sample_size: int,
         scorer: Scorer,
         initial_steps: int,
@@ -107,8 +107,8 @@ def sample_from(
     correlation matrices.
     :return: Sample matrix with shape (len(variables), samples_size).
     """
-    if not isinstance(variables, DesignSpace):
-        variables = DesignSpace(variables)
+    if not isinstance(variables, ParameterSpace):
+        variables = ParameterSpace(variables)
         # Sometimes, we may randomly generate probabilities with
         # singular correlation matrices. Try 3 times to avoid issue until we give up
     error_text = ""
@@ -119,8 +119,8 @@ def sample_from(
     )
     for k in range(3):
         doe = uniform(0, 1).rvs((sample_size, len(variables)))
-        if not isinstance(variables, DesignSpace):
-            variables = DesignSpace(variables)
+        if not isinstance(variables, ParameterSpace):
+            variables = ParameterSpace(variables)
         doe = variables.value_of(doe)
         if target_correlation is None:
             target_correlation = np.eye(len(variables))

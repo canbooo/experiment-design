@@ -17,7 +17,7 @@ from experiment_design.scorers import (
     create_default_scorer_factory,
     select_local,
 )
-from experiment_design.variable import DesignSpace, VariableCollection
+from experiment_design.variable import ParameterSpace, VariableCollection
 
 
 class OrthogonalSamplingDesigner(ExperimentDesigner):
@@ -64,7 +64,7 @@ class OrthogonalSamplingDesigner(ExperimentDesigner):
 
     def _create(
         self,
-        variables: DesignSpace,
+        variables: ParameterSpace,
         sample_size: int,
         scorer: Scorer,
         initial_steps: int,
@@ -106,7 +106,7 @@ class OrthogonalSamplingDesigner(ExperimentDesigner):
     def _extend(
         self,
         old_sample: np.ndarray,
-        variables: DesignSpace,
+        variables: ParameterSpace,
         sample_size: int,
         scorer: Scorer,
         initial_steps: int,
@@ -156,8 +156,8 @@ def create_orthogonal_design(
     inter_bin_randomness: float = 1.0,
 ) -> np.ndarray:
     """Create an orthogonal design without any optimization."""
-    if not isinstance(variables, DesignSpace):
-        variables = DesignSpace(variables)
+    if not isinstance(variables, ParameterSpace):
+        variables = ParameterSpace(variables)
     # Sometimes, we may randomly generate probabilities with
     # singular correlation matrices. Try 3 times to avoid issue until we give up
     error_text = ""
@@ -230,7 +230,7 @@ def _find_empty_bins(probabilities: np.ndarray, bins_per_dimension: int) -> np.n
 
 def _create_candidates_from(
     empty_bins: np.ndarray,
-    variables: DesignSpace,
+    variables: ParameterSpace,
     sample_size: int,
     inter_bin_randomness: float = 1.0,
 ) -> np.ndarray:

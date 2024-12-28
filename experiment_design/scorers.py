@@ -3,7 +3,7 @@ from typing import Callable, Iterable, Protocol
 import numpy as np
 from scipy.spatial.distance import pdist
 
-from experiment_design.variable import DesignSpace
+from experiment_design.variable import ParameterSpace
 from experiment_design.variable.space import VariableCollection
 
 
@@ -214,8 +214,8 @@ def calculate_equidistant_bin_diagonal_length(
     variables: VariableCollection, sample_size: int
 ) -> float:
     """Calculate the length of the diagonal of equidistant bins the (Euclidean) design space"""
-    if not isinstance(variables, DesignSpace):
-        variables = DesignSpace(variables)
+    if not isinstance(variables, ParameterSpace):
+        variables = ParameterSpace(variables)
     lower, upper = variables.lower_bound, variables.upper_bound
     return np.linalg.norm((np.array(upper) - np.array(lower)) / sample_size)
 
@@ -269,8 +269,8 @@ def create_old_doe_handler(
 
 def select_local(samples: np.ndarray, variables: VariableCollection) -> np.ndarray:
     """Select and return samples that fall within the finite bounds of the variables"""
-    if not isinstance(variables, DesignSpace):
-        variables = DesignSpace(variables)
+    if not isinstance(variables, ParameterSpace):
+        variables = ParameterSpace(variables)
     lower, upper = variables.lower_bound[None, :], variables.upper_bound[None, :]
     local_mask = np.logical_and((samples >= lower).all(1), (samples <= upper).all(1))
     return samples[local_mask]
