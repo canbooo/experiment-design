@@ -7,7 +7,6 @@ import numpy as np
 from scipy.stats._distn_infrastructure import rv_frozen
 
 from experiment_design import variable
-from experiment_design.scorers import create_correlation_matrix
 
 
 @dataclass
@@ -50,6 +49,8 @@ class ParameterSpace:
                 f"Inconsistent shapes: {self.dimensions} does not match "
                 f"{self.correlation_matrix.shape}"
             )
+        if np.max(np.abs(self.correlation_matrix)) > 1:
+            raise ValueError("Correlations should be in the interval [-1,1].")
 
         lower, upper = [], []
         for var in self.variables:
@@ -99,3 +100,20 @@ class ParameterSpace:
 
 
 VariableCollection = list[rv_frozen] | list[variable.Variable] | ParameterSpace
+
+
+def create_correlation_matrix(
+    target_correlation: float | np.ndarray = 0.0,
+    num_variables: int | None = None,
+) -> np.ndarray:
+    """Create a correlation matrix from the target correlation in case it is a float"""
+    if not np.isscalar(target_correlation):
+        return target_correlation
+    if not num_variables:
+        raise ValueError(
+            "num_variables have to be passed if the target_correlation is a scalar."
+        )
+    return (
+        np.eye(num_variables) * (1 - target_correlation)
+        + np.ones((num_variables, num_variables)) * target_correlation
+    )
