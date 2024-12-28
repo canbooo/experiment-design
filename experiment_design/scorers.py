@@ -155,7 +155,6 @@ class WeightedSumScorerFactory:
         sample_size: int,
         old_sample: np.ndarray | None = None,
     ) -> Scorer:
-
         scorers = [
             factory(space, sample_size, old_sample=old_sample)
             for factory in self.scorer_factories

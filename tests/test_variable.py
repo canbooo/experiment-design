@@ -177,7 +177,6 @@ class TestDiscreteVariable:
 
 
 class TestParameterSpace:
-
     def test_value_of(
         self, design_space: experiment_design.variable.space.ParameterSpace
     ):

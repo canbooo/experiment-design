@@ -23,7 +23,6 @@ def distributions_to_test() -> list[rv_frozen]:
 
 
 class TestRandomSamplingDesigner:
-
     @staticmethod
     def get_instance(exact_correlation: bool = False):
         return module_under_test.RandomSamplingDesigner(

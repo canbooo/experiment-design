@@ -23,7 +23,6 @@ def distributions_to_test() -> list[rv_frozen]:
 
 
 class TestOrthogonalSamplingDesigner:
-
     @staticmethod
     def get_instance():
         return module_under_test.OrthogonalSamplingDesigner()
