@@ -14,7 +14,7 @@ class ParameterSpace:
     """A container of multiple variables defining a parameter space.
 
     :param variables: list of variables or marginal distributions that define the marginal parameters
-    :param correlation_matrix: A float or asymmetric matrix with shape (len(variables), len(variables)), representing the
+    :param correlation: A float or asymmetric matrix with shape (len(variables), len(variables)), representing the
         linear dependency between the dimensions. If a float is passed, all non-diagonal entries of the unit matrix will
         be set to this value.
     """
@@ -25,7 +25,7 @@ class ParameterSpace:
         ]
         | list[rv_frozen]
     )
-    correlation_matrix: float | np.ndarray | None = None
+    correlation: float | np.ndarray | None = None
     _lower_bound: np.ndarray = field(init=False, repr=False, default=None)
     _upper_bound: np.ndarray = field(init=False, repr=False, default=None)
 
@@ -35,21 +35,17 @@ class ParameterSpace:
                 self.variables
             )
 
-        if self.correlation_matrix is None:
-            self.correlation_matrix = 0
-        self.correlation_matrix = create_correlation_matrix(
-            self.correlation_matrix, self.dimensions
-        )
+        if self.correlation is None:
+            self.correlation = 0
+        self.correlation = create_correlation_matrix(self.correlation, self.dimensions)
         if not (
-            self.correlation_matrix.shape[0]
-            == self.correlation_matrix.shape[1]
-            == self.dimensions
+            self.correlation.shape[0] == self.correlation.shape[1] == self.dimensions
         ):
             raise ValueError(
                 f"Inconsistent shapes: {self.dimensions} does not match "
-                f"{self.correlation_matrix.shape}"
+                f"{self.correlation.shape}"
             )
-        if np.max(np.abs(self.correlation_matrix)) > 1:
+        if np.max(np.abs(self.correlation)) > 1:
             raise ValueError("Correlations should be in the interval [-1,1].")
 
         lower, upper = [], []

@@ -73,9 +73,7 @@ class MaxCorrelationScorerFactory:
 
         def _scorer(doe: np.ndarray) -> float:
             error = np.max(
-                np.abs(
-                    np.corrcoef(handler(doe), rowvar=False) - space.correlation_matrix
-                )
+                np.abs(np.corrcoef(handler(doe), rowvar=False) - space.correlation)
             )
             if error > self.eps:
                 return -np.exp(error + 1)

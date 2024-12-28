@@ -145,7 +145,7 @@ def create_orthogonal_design(
         )
         doe = space.value_of(probabilities)
         try:
-            return iman_connover_transformation(doe, space.correlation_matrix)
+            return iman_connover_transformation(doe, space.correlation)
         except np.linalg.LinAlgError as exc:
             error_text = str(exc)
             pass

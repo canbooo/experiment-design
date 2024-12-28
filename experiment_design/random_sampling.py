@@ -112,12 +112,12 @@ def sample_from(
         doe = space.value_of(doe)
 
         if (
-            np.isclose(space.correlation_matrix == np.eye(len(space)))
+            np.isclose(space.correlation == np.eye(len(space)))
             and not exact_correlation
         ):
             return doe
         try:
-            return transformer(doe, space.correlation_matrix)
+            return transformer(doe, space.correlation)
         except np.linalg.LinAlgError as exc:
             error_text = str(exc)
             pass
