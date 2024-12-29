@@ -38,9 +38,10 @@ class RandomSamplingDesigner(ExperimentDesigner):
         scorer: Scorer,
         initial_steps: int,
         final_steps: int,
-        verbose: int,
     ) -> np.ndarray:
         steps = initial_steps + final_steps
+        if steps <= 1:
+            return sample_from(space, sample_size, self.exact_correlation)
         return random_search(
             creator=partial(
                 sample_from,
@@ -50,7 +51,6 @@ class RandomSamplingDesigner(ExperimentDesigner):
             ),
             scorer=scorer,
             steps=steps,
-            verbose=verbose,
         )
 
     def _extend(
@@ -61,9 +61,10 @@ class RandomSamplingDesigner(ExperimentDesigner):
         scorer: Scorer,
         initial_steps: int,
         final_steps: int,
-        verbose: int,
     ) -> np.ndarray:
         steps = initial_steps + final_steps
+        if steps == 1:
+            return sample_from(space, sample_size, self.exact_correlation)
         logging.warning(
             "If the design space changes, "
             "random sampling may not handle correlation modification properly!"
@@ -77,7 +78,6 @@ class RandomSamplingDesigner(ExperimentDesigner):
             ),
             scorer=scorer,
             steps=steps,
-            verbose=verbose,
         )
 
 
