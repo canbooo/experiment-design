@@ -203,7 +203,7 @@ def _find_empty_bins(probabilities: np.ndarray, bins_per_dimension: int) -> np.n
 
 def _create_candidates_from(
     empty_bins: np.ndarray,
-    variables: ParameterSpace,
+    space: ParameterSpace,
     sample_size: int,
     inter_bin_randomness: float = 1.0,
 ) -> np.ndarray:
@@ -229,4 +229,8 @@ def _create_candidates_from(
     if inter_bin_randomness > 0.0:
         delta *= inter_bin_randomness
         probabilities += uniform(-delta / 2, delta).rvs(size=(sample_size, dimensions))
-    return variables.value_of(probabilities)
+    doe = space.value_of(probabilities)
+    try:
+        return iman_connover_transformation(doe, space.correlation)
+    except np.linalg.LinAlgError:
+        return doe
