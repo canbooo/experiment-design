@@ -34,7 +34,6 @@ class ExperimentDesigner(abc.ABC):
         old_sample: np.ndarray | None = None,
         steps: int | None = None,
         initial_optimization_proportion: float = DEFAULT_INITIAL_OPTIMIZATION_PROPORTION,
-        verbose: int = 0,
     ) -> np.ndarray:
         """
         Create or extend a design of experiments (DoE).
@@ -47,7 +46,6 @@ class ExperimentDesigner(abc.ABC):
         :param steps: Number of DoEs to be created to choose the best from.
         :param initial_optimization_proportion:  Proportion of steps that will be used to create an
             initial DoE with a good score. Rest of the steps will be used to optimize the candidate points.
-        :param verbose: Controls print messages. 2 leads to maximum verbosity,
         :return: DoE matrix with shape (len(variables), samples_size)
         """
         scorer = self.scorer_factory(space, sample_size, old_sample=old_sample)
@@ -55,9 +53,7 @@ class ExperimentDesigner(abc.ABC):
             sample_size, steps, proportion=initial_optimization_proportion
         )
         if old_sample is None:
-            return self._create(
-                space, sample_size, scorer, initial_steps, final_steps, verbose
-            )
+            return self._create(space, sample_size, scorer, initial_steps, final_steps)
         return self._extend(
             old_sample,
             space,
@@ -65,7 +61,6 @@ class ExperimentDesigner(abc.ABC):
             scorer,
             initial_steps,
             final_steps,
-            verbose,
         )
 
     @abc.abstractmethod
@@ -76,7 +71,6 @@ class ExperimentDesigner(abc.ABC):
         scorer: Scorer,
         initial_steps: int,
         final_steps: int,
-        verbose: int,
     ) -> np.ndarray:
         raise NotImplementedError
 
@@ -89,7 +83,6 @@ class ExperimentDesigner(abc.ABC):
         scorer: Scorer,
         initial_steps: int,
         final_steps: int,
-        verbose: int,
     ) -> np.ndarray:
         raise NotImplementedError
 

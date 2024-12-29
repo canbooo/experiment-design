@@ -1,3 +1,4 @@
+import logging
 from functools import partial
 from typing import Callable
 
@@ -54,7 +55,6 @@ class OrthogonalSamplingDesigner(ExperimentDesigner):
         scorer: Scorer,
         initial_steps: int,
         final_steps: int,
-        verbose: int,
     ) -> np.ndarray:
         if initial_steps + final_steps == 1:
             return create_orthogonal_design(
@@ -63,8 +63,7 @@ class OrthogonalSamplingDesigner(ExperimentDesigner):
                 inter_bin_randomness=self.inter_bin_randomness,
             )
 
-        if verbose:
-            print("Creating an initial design")
+        logging.info("Creating an initial design...")
         doe = random_search(
             creator=partial(
                 create_orthogonal_design,
@@ -74,13 +73,9 @@ class OrthogonalSamplingDesigner(ExperimentDesigner):
             ),
             scorer=scorer,
             steps=initial_steps,
-            verbose=verbose,
         )
-        if verbose:
-            print("Optimizing the initial design")
-        return simulated_annealing_by_perturbation(
-            doe, scorer, steps=final_steps, verbose=verbose
-        )
+        logging.info("Optimizing the initial design...")
+        return simulated_annealing_by_perturbation(doe, scorer, steps=final_steps)
 
     def _extend(
         self,
@@ -90,7 +85,6 @@ class OrthogonalSamplingDesigner(ExperimentDesigner):
         scorer: Scorer,
         initial_steps: int,
         final_steps: int,
-        verbose: int,
     ) -> np.ndarray:
         local_doe = select_local(old_sample, space)
         probabilities = space.cdf_of(local_doe)
@@ -107,14 +101,13 @@ class OrthogonalSamplingDesigner(ExperimentDesigner):
             sample_size,
             empty_size_check=self.empty_size_check,
         )
-        if verbose:
-            print("Creating candidate points to extend the design")
 
         if initial_steps + final_steps == 1:
             return _create_candidates_from(
                 empty, space, sample_size, self.inter_bin_randomness
             )
 
+        logging.debug("Creating candidate points to extend the design")
         new_sample = random_search(
             creator=partial(
                 _create_candidates_from,
@@ -125,10 +118,8 @@ class OrthogonalSamplingDesigner(ExperimentDesigner):
             ),
             scorer=scorer,
             steps=initial_steps,
-            verbose=verbose,
         )
-        if verbose:
-            print("Optimizing candidate points to extend the design")
+        logging.info("Optimizing candidate points to extend the design")
         return simulated_annealing_by_perturbation(
             new_sample, scorer, steps=final_steps
         )

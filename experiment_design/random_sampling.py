@@ -38,7 +38,6 @@ class RandomSamplingDesigner(ExperimentDesigner):
         scorer: Scorer,
         initial_steps: int,
         final_steps: int,
-        verbose: int,
     ) -> np.ndarray:
         steps = initial_steps + final_steps
         if steps <= 1:
@@ -52,7 +51,6 @@ class RandomSamplingDesigner(ExperimentDesigner):
             ),
             scorer=scorer,
             steps=steps,
-            verbose=verbose,
         )
 
     def _extend(
@@ -63,7 +61,6 @@ class RandomSamplingDesigner(ExperimentDesigner):
         scorer: Scorer,
         initial_steps: int,
         final_steps: int,
-        verbose: int,
     ) -> np.ndarray:
         steps = initial_steps + final_steps
         if steps == 1:
@@ -81,7 +78,6 @@ class RandomSamplingDesigner(ExperimentDesigner):
             ),
             scorer=scorer,
             steps=steps,
-            verbose=verbose,
         )
 
 
