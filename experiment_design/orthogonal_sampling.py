@@ -33,6 +33,18 @@ class OrthogonalSamplingDesigner(ExperimentDesigner):
         extension, old sampling points. If not passed, a default one will be created, that evaluates the maximum
         correlation error and minimum pairwise distance. See `experiment_design.scorers.create_default_scorer_factory`
         for more details.
+
+
+    M. D. McKay, W. J. Conover and R. J. Beckmann (1979). “A comparison of three methods for selecting values of input
+    variables in the analysis of output from a computer code”
+
+    A. B. Owen (1992). “Orthogonal arrays for computer experiments, integration and visualization”
+
+    C. Bogoclu (2022). "Local Latin Hypercube Refinement for Uncertainty Quantification and Optimization" Chapters 4.3.1
+    and 5
+    https://hss-opus.ub.ruhr-uni-bochum.de/opus4/frontdoor/deliver/index/docId/9143/file/diss.pdf
+
+
     """
 
     def __init__(
