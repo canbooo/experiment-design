@@ -112,7 +112,7 @@ class OrthogonalSamplingDesigner(ExperimentDesigner):
             creator=partial(
                 _create_candidates_from,
                 empty_bins=empty,
-                variables=space,
+                space=space,
                 sample_size=sample_size,
                 inter_bin_randomness=self.inter_bin_randomness,
             ),
