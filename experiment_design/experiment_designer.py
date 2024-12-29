@@ -116,5 +116,5 @@ def calculate_optimization_step_numbers(
         else:
             steps = 2000
     init_steps = max(1, round(proportion * steps))
-    opt_steps = max(1, steps - init_steps)
+    opt_steps = max(0, steps - init_steps)
     return init_steps, opt_steps

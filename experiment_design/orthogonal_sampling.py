@@ -56,8 +56,7 @@ class OrthogonalSamplingDesigner(ExperimentDesigner):
         final_steps: int,
         verbose: int,
     ) -> np.ndarray:
-        if (initial_steps + final_steps) <= 2:
-            # Enable faster use cases:
+        if initial_steps + final_steps == 1:
             return create_orthogonal_design(
                 space=space,
                 sample_size=sample_size,
@@ -110,6 +109,12 @@ class OrthogonalSamplingDesigner(ExperimentDesigner):
         )
         if verbose:
             print("Creating candidate points to extend the design")
+
+        if initial_steps + final_steps == 1:
+            return _create_candidates_from(
+                empty, space, sample_size, self.inter_bin_randomness
+            )
+
         new_sample = random_search(
             creator=partial(
                 _create_candidates_from,
