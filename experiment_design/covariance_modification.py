@@ -28,6 +28,7 @@ def second_moment_transformation(
     target_correlation: np.ndarray,
     means: np.ndarray | None = None,
     standard_deviations: np.ndarray | None = None,
+    jitter: float = 1e-6,
 ) -> np.ndarray:
     """Second-moment transformation for achieving the target covariance"""
     if means is None:
@@ -37,10 +38,20 @@ def second_moment_transformation(
         standard_deviations = standard_deviations.reshape((1, -1))
     target_covariance = (
         standard_deviations.T.dot(standard_deviations) * target_correlation
-    )
-    target_cov_upper = np.linalg.cholesky(
-        target_covariance
-    ).T  # convert to covariance before Cholesky
-    cur_cov_upper = np.linalg.cholesky(np.cov(doe, rowvar=False)).T
+    )  # convert to covariance before Cholesky
+    try:
+        target_cov_upper = np.linalg.cholesky(target_covariance).T
+    except np.linalg.LinAlgError:
+        target_cov_upper = np.linalg.cholesky(
+            target_covariance + np.eye(target_covariance.shape[0]) * jitter
+        ).T
+    cur_cov = np.cov(doe, rowvar=False)
+    try:
+        cur_cov_upper = np.linalg.cholesky(cur_cov).T
+    except np.linalg.LinAlgError:
+        cur_cov_upper = np.linalg.cholesky(
+            cur_cov + np.eye(cur_cov.shape[0]) * jitter
+        ).T
+
     inv_cov_upper = solve_triangular(cur_cov_upper, target_cov_upper)
     return (doe - means).dot(inv_cov_upper) + means
