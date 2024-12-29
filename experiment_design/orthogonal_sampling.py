@@ -156,7 +156,9 @@ def create_orthogonal_design(
         except np.linalg.LinAlgError as exc:
             error_text = str(exc)
             pass
-    raise np.linalg.LinAlgError(error_text)
+    error_text = f"Orthogonal design may not have the desired correlation due to the following error: {error_text}"
+    logging.warning(error_text)
+    return doe
 
 
 def create_lhd_probabilities(
