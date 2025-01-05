@@ -169,7 +169,7 @@ def create_orthogonal_design(
     error_text = ""
     for k in range(3):
         probabilities = create_lhd_probabilities(
-            space.dimensions, sample_size, inter_bin_randomness=inter_bin_randomness
+            len(space), sample_size, inter_bin_randomness=inter_bin_randomness
         )
         doe = space.value_of(probabilities)
         try:
