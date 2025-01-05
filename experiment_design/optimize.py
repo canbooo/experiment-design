@@ -14,13 +14,12 @@ def random_search(
     creator: Callable[[], np.ndarray], scorer: Scorer, steps: int
 ) -> np.ndarray:
     """
-    Given a design of experiment (DoE) creator and scorer, maximize the score
-    by random search.
+    Given a |DoE| creator and scorer, maximize the score by random search.
 
-    :param creator: A function that creates DoEs.
-    :param scorer: A function that scores DoEs.
+    :param creator: |DoE| creating function.
+    :param scorer: |DoE| scoring function.
     :param steps: Number of steps to search.
-    :return: The DoE matrix with the best score.
+    :return: The |DoE| matrix with the best score.
     """
     steps = max(1, steps)
     best_doe = creator()
@@ -50,19 +49,28 @@ def simulated_annealing_by_perturbation(
     max_steps_without_improvement: int = 25,
 ) -> np.ndarray:
     """
-    Simulated annealing algorithm to maximize the score of a design of experiments (DoE) by
+    Simulated annealing algorithm to maximize the score of a |DoE| by
     perturbing the rows of the design matrix along the columns. This kind of perturbation is
-    used to avoid violating the Latin hypercube scheme, i.e. to keep the number of filled bins
+    used to avoid violating the |LHS|, i.e. to keep the number of filled bins
     same.
 
-    :param doe: DoE matrix with shape (sample_size, len(variables)).
+    :param doe: |DoE| matrix with shape (sample_size, len(variables)).
     :param scorer: A scoring function for the doe. It will be maximized.
     :param steps: Number of steps for the annealing algorithm.
     :param cooling_rate: Annealing parameter to decay temperature.
     :param temperature: Annealing temperature.
     :param max_steps_without_improvement: A limit on the maximum steps to take for exploration before setting the
         reference matrix to the last best value.
-    :return: Optimized DoE matrix
+    :return: Optimized |DoE| matrix
+
+    References
+    ----------
+    R.V. Joseph and Y. Hung (2008). "`Orthogonal-Maximin Latin Hypercube Designs
+    <https://www3.stat.sinica.edu.tw/statistica/oldpdf/A18n17.pdf>`_"
+
+    C. Bogoclu (2022). "`Local Latin Hypercube Refinement for Uncertainty Quantification and Optimization
+    <https://hss-opus.ub.ruhr-uni-bochum.de/opus4/frontdoor/deliver/index/docId/9143/file/diss.pdf>`_" Chapter 4.3.2.2
+
     """
     if temperature <= 1e-16:
         raise ValueError("temperature must be strictly positive.")

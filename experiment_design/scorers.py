@@ -7,26 +7,40 @@ from experiment_design.variable import ParameterSpace
 
 
 class Scorer(Protocol):
+    """
+    :meta private:
+    """
+
     def __call__(self, doe: np.ndarray) -> float:
         """
         A scoring function to evaluate an experiment design quality. Larger values are better,
         i.e. this will be maximized.
 
-        :param doe: Design of experiments consisting of candidate samples.
+        :param doe: Design of experiments consisting of candidate samples with shape (n_sample, n_dim).
         :return: score of the DoE.
         """
-        ...
 
 
 class ScorerFactory(Protocol):
+    """
+    :meta private:
+    """
+
     def __call__(
         self,
         space: ParameterSpace,
         sample_size: int,
         old_sample: np.ndarray | None = None,
     ) -> Scorer:
-        """Given variables and sample size, create a scoring function"""
-        ...
+        """
+        Given variables and sample size, create a scoring function
+
+        :param space: ParameterSpace for which the Scorer will be used
+        :param sample_size: Number of samples in the DoE that will be evaluated by the scorer
+        :param old_sample: If passed, it is an array with shape (n_old_sample, n_dim) which represents the already
+            observed points.
+        :return: A Scorer function, that accepts a DoE of shape (n_sample, n_dim) and returns the score
+        """
 
 
 class MaxCorrelationScorerFactory:
@@ -35,8 +49,7 @@ class MaxCorrelationScorerFactory:
 
     :param local: If True, any points in the old_sample will be ignored, that fall outside the finite bounds of the
         provided variables. Has no effect if old_sample is None.
-    :param eps: a small positive value to improve the stability of the log operation.
-
+    :param eps: A small positive value to improve the stability of the log operation.
     """
 
     def __init__(
@@ -63,7 +76,7 @@ class MaxCorrelationScorerFactory:
         :param space: Dimensions of the design space.
         :param sample_size: number of candidate points to be scored.
         :param old_sample: If passed, represents the matrix of points in an older design of experiments with shape
-            (old_sample_size, len(variables)). Depending on self.local, some or all of these will be appended to the
+            (old_sample_size, space.dimensions). Depending on self.local, some or all of these will be appended to the
             candidate points before computing the correlation error.
         :return: a scorer that returns the negative exp(maximum absolute correlation error + 1). If the error is
             smaller than self.eps, it returns negative exp(maximum absolute correlation error - 1) instead.
@@ -86,15 +99,15 @@ class PairwiseDistanceScorerFactory:
     """
     A scorer factory for the minimum pairwise distance between sampling points.
 
-    Note: This currently computes all distances. Hence, it may be inefficient for very large
-    sample sizes. This behaviour could be improved using algorithms like KDTrees or KNN but
-    they would lead to more dependencies. Therefore, we prefer omitting the implementation for
-    now and providing this note instead. If there is interest in handling large sample sizes,
-    create an issue or open a pull request.
+    .. warning:: Currently, all pair-wise distances are computed greedily. Although this works faster for small sample
+        sizes thanks to the C++ implementation used in scipy.spatial.distance.pdist, it may be memory-inefficient for
+        large sample sizes. Using algorithms like KDTrees could solve this issue. However, we prefer omitting
+        such implementation for the sake of reducing the number of dependencies. You can implement a custom
+        ScorerFactory to circumvent this issue.
 
     :param local: If True, any points in the old_sample will be ignored, that fall outside the finite bounds of the
         provided variables. Has no effect if old_sample is None.
-    :return: a scorer that returns the log minimum pairwise distance divided by the log max distance.
+    :return: A scorer that returns the log minimum pairwise distance divided by the log max distance.
     """
 
     def __init__(self, local: bool = False) -> None:
@@ -183,6 +196,11 @@ def create_default_scorer_factory(
     :param local_correlation: Controls the local attribute of the MaxCorrelationScorerFactory.
     :param local_pairwise_distance: Controls the local attribute of the PairwiseDistanceScorerFactory
     :return: WeightedSumScorerFactory instance.
+
+    References
+    ----------
+    R.V. Joseph and Y. Hung (2008). "`Orthogonal-Maximin Latin Hypercube Designs
+    <https://www3.stat.sinica.edu.tw/statistica/oldpdf/A18n17.pdf>`_"
     """
     corr_scorer_factory = MaxCorrelationScorerFactory(local=local_correlation)
     dist_scorer_factory = PairwiseDistanceScorerFactory(local=local_pairwise_distance)
@@ -195,9 +213,12 @@ def create_default_scorer_factory(
 def calculate_equidistant_bin_diagonal_length(
     space: ParameterSpace, sample_size: int
 ) -> float:
-    """Calculate the length of the diagonal of equidistant bins the (Euclidean) design space"""
+    """Calculate the length of the diagonal of equidistant bins the (Euclidean) design space
+
+    :meta private:
+    """
     lower, upper = space.lower_bound, space.upper_bound
-    return np.linalg.norm((np.array(upper) - np.array(lower)) / sample_size)
+    return float(np.linalg.norm((np.array(upper) - np.array(lower)) / sample_size))
 
 
 def create_old_doe_handler(
@@ -215,8 +236,10 @@ def create_old_doe_handler(
         a no-op function.
     :param local: If True, only include the points from the old_doe, that fall between the finite local bounds of the
         variables.
-    :return: The function with a single argument, new doe, which may append points from the old doe depending on the
-        arguments provided.
+    :return: The function that receives a new |DoE|, which may append points from the old_sample depending on
+        the arguments provided.
+
+    :meta private:
     """
     if old_sample is None:
         # Nothing to handle
@@ -231,7 +254,10 @@ def create_old_doe_handler(
 
 
 def select_local(samples: np.ndarray, space: ParameterSpace) -> np.ndarray:
-    """Select and return samples that fall within the finite bounds of the variables"""
+    """Select and return samples that fall within the finite bounds of the variables
+
+    :meta private:
+    """
     lower, upper = space.lower_bound[None, :], space.upper_bound[None, :]
     local_mask = np.logical_and((samples >= lower).all(1), (samples <= upper).all(1))
     return samples[local_mask]

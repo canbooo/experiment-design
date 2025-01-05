@@ -71,14 +71,14 @@ class ContinuousVariable:
             raise ValueError("Only frozen continuous distributions are supported.")
 
     def value_of(self, probability: float | np.ndarray) -> float | np.ndarray:
-        """Given a probability or an array of probabilities return the corresponding value(s) using the inverse cdf."""
+        """Given a probability or an array of probabilities return the corresponding value(s) using the inverse |CDF|."""
         values = self.distribution.ppf(probability)
         if self.upper_bound is not None or self.lower_bound is not None:
             return np.clip(values, self.lower_bound, self.upper_bound)
         return values
 
     def cdf_of(self, value: float | np.ndarray) -> float | np.ndarray:
-        """Given a value or an array of values return the probability using the cdf."""
+        """Given a value or an array of values return the probability using the |CDF|."""
         return self.distribution.cdf(value)
 
     @property
@@ -176,7 +176,7 @@ def create_discrete_uniform_variables(
                 distribution=randint(0, n_values),
                 # Don't forget to bind the discrete_set below either by
                 # defining a kwarg as done here, or by generating in another
-                # scope, e.g. function. Otherwise, the last value of discrete_set
+                # scope, e.g. function. Otherwise, the last value of discrete_sets
                 # i.e. the last entry of discrete_sets will be used for all converters
                 # Check https://stackoverflow.com/questions/19837486/lambda-in-a-loop
                 # for a description as this is expected python behaviour.

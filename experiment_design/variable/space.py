@@ -64,35 +64,44 @@ class ParameterSpace:
         return results
 
     def value_of(self, probabilities: np.ndarray) -> np.ndarray:
-        """Given an array of probabilities return the corresponding values using the inverse marginal cdf.
-        Ignores correlation!
+        """
+        Given an array of marginal probabilities, return the corresponding values with shape probabilities.shape using
+        the inverse marginal CDF.
+
+        Since it operates on the marginal variables, correlation does not have an effect.
         """
         return self._map_by("value_of", probabilities)
 
     def cdf_of(self, values: np.ndarray) -> np.ndarray:
-        """Given an array of values return the marginal probability using the cdf.
-        Ignores correlation!
+        """
+        Given an array of marginal values return the marginal probabilities with shape values.shape using the CDF.
+
+        Since it operates on the marginal variables, correlation does not have an effect.
         """
         return self._map_by("cdf_of", values)
 
     @property
     def lower_bound(self) -> np.ndarray:
-        """Finite lower bound of the space."""
+        """
+        Lower bound values of the space with shape (self.dimensions, ).
+
+        variable.finite_lower_bound is used to provide finite bounds even for unbounded variables
+        """
         return self._lower_bound
 
     @property
     def upper_bound(self) -> np.ndarray:
-        """Finite upper bound of the space."""
+        """
+        Upper bound of the space with shape (self.dimensions, ).
+
+        variable.finite_upper_bound is used to provide finite bounds even for unbounded variables
+        """
         return self._upper_bound
 
     @property
     def dimensions(self) -> int:
-        """Size of the space, i.e. the number of dimensions."""
+        """Size of the space, i.e. the number of variables."""
         return len(self.variables)
-
-    def __len__(self):
-        """Size of the space, i.e. the number of dimensions."""
-        return self.dimensions
 
 
 VariableCollection = list[rv_frozen] | list[variable.Variable] | ParameterSpace
@@ -102,7 +111,11 @@ def create_correlation_matrix(
     target_correlation: float | np.ndarray = 0.0,
     num_variables: int | None = None,
 ) -> np.ndarray:
-    """Create a correlation matrix from the target correlation in case it is a float"""
+    """
+    Create a correlation matrix from the target correlation in case it is a float
+
+    :meta private:
+    """
     if not np.isscalar(target_correlation):
         return target_correlation
     if not num_variables:
