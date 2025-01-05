@@ -12,7 +12,7 @@ def iman_connover_transformation(
     Rearrange the values of doe to reduce correlation error while adhering to any marginal constraints of the values
     such as an |LHS|
 
-    :param doe: Array with shape (n_sample, n_dim) representing the initial design of experiment with arbitrary
+    :param doe: Array with shape (n_sample, n_dim) representing the initial |DoE| with arbitrary
         correlation.
     :param target_correlation: Symmetric positive definite correlation matrix with shape (n_dim, n_dim) representing
         the desired correlation between variables
@@ -20,7 +20,7 @@ def iman_connover_transformation(
         inferred from doe
     :param standard_deviations: Array with shape (n_dim,) representing the standard deviations of the marginal
         distributions. If None, it will be inferred from doe
-    :return:
+    :return: New |DoE| with the same shape and values as doe but smaller correlation error wrt. target_correlation
 
     References
     ----------
@@ -31,6 +31,21 @@ def iman_connover_transformation(
     C. Bogoclu (2022). "`Local Latin Hypercube Refinement for Uncertainty Quantification and Optimization
     <https://hss-opus.ub.ruhr-uni-bochum.de/opus4/frontdoor/deliver/index/docId/9143/file/diss.pdf>`_" Chapter 4.3.2
 
+    Examples
+    --------
+    >>> from experiment_design.covariance_modification import iman_connover_transformation
+    >>> import numpy as np
+    >>> from scipy import stats
+    >>> np.random.seed(1337)
+    >>> samples = stats.randint(0, 100).rvs((30, 2))
+    >>> correlation_error = np.max(np.abs(np.corrcoef(samples, rowvar=False) - np.eye(2)))
+    >>> new_samples = iman_connover_transformation(samples, np.eye(2))
+    >>> np.max(np.abs(np.corrcoef(new_samples, rowvar=False) - np.eye(2))) < correlation_error
+    True
+    >>> sorted(samples[:, 0]) == sorted(new_samples[:, 0])
+    True
+    >>> sorted(samples[:, 1]) == sorted(new_samples[:, 1])
+    True
     """
     transformed = second_moment_transformation(
         doe, target_correlation, means, standard_deviations
@@ -59,7 +74,21 @@ def second_moment_transformation(
         distributions. If None, it will be inferred from doe
     :param jitter: A small positive constant that will be added to the diagonal of the covariance matrix in case
         it is positive semi-definite to enable Cholesky decomposition.
-    :return:
+    :return: New |DoE| with the same shape but different values as doe, that matches the target_correlation exactly.
+
+
+    Examples
+    --------
+    >>> from experiment_design.covariance_modification import iman_connover_transformation
+    >>> import numpy as np
+    >>> from scipy import stats
+    >>> np.random.seed(1337)
+    >>> samples = stats.norm.rvs(size=(50, 2))
+    >>> new_samples = iman_connover_transformation(samples, np.eye(2))
+    >>> correlation_error = np.max(np.abs(np.corrcoef(new_samples, rowvar=False) - np.eye(2)))
+    >>> bool(np.isclose(correlation_error, 0, atol=1e-6))
+    True
+
     """
     if means is None:
         means = np.mean(doe, axis=0)

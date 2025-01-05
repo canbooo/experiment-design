@@ -29,6 +29,17 @@ class RandomSamplingDesigner(ExperimentDesigner):
         `experiment_design.scorers.create_default_scorer_factory <#experiment_design.scorers.create_default_scorer_factory>`_
         for more details.
 
+    Examples
+    --------
+    >>> from experiment_design import create_continuous_uniform_space, RandomSamplingDesigner
+    >>> space = create_continuous_uniform_space([-2., -2.], [2. 2.])
+    >>> designer = RandomSamplingDesigner()
+    >>> doe1 = designer.design(space, sample_size=20)
+    >>> doe1.shape
+    (20, 2)
+    >>> doe2 = designer.design(space, 4, old_sample=doe1)
+    >>> doe2.shape
+    (4, 2)
     """
 
     def __init__(

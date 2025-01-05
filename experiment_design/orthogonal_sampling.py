@@ -48,6 +48,20 @@ class OrthogonalSamplingDesigner(ExperimentDesigner):
     C. Bogoclu (2022). "`Local Latin Hypercube Refinement for Uncertainty Quantification and Optimization
     <https://hss-opus.ub.ruhr-uni-bochum.de/opus4/frontdoor/deliver/index/docId/9143/file/diss.pdf>`_"
     Chapters 4.3.1 and 5
+
+
+    Examples
+    --------
+    >>> from experiment_design import create_continuous_uniform_space, OrthogonalSamplingDesigner
+    >>> space = create_continuous_uniform_space([-2., -2.], [2. 2.])
+    >>> designer = OrthogonalSamplingDesigner()
+    >>> doe1 = designer.design(space, sample_size=20)
+    >>> doe1.shape
+    (20, 2)
+    >>> doe2 = designer.design(space, 4, old_sample=doe1)
+    >>> doe2.shape
+    (4, 2)
+
     """
 
     def __init__(
