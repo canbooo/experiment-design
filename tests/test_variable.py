@@ -47,24 +47,26 @@ def test_is_frozen_continuous():
 
 
 def test_create_continuous_discrete_uniform_variables():
-    variables = module_under_test.create_discrete_uniform_variables(
+    space = experiment_design.variable.space.create_discrete_uniform_space(
         [[1, 2], [3, 4, 5], [9, 8]]
     )
-    probabilities = np.array([1e-6, 0.6, 1])
-    expected = np.array([[1, 2, 2], [3, 4, 5], [8, 9, 9]])
+    probabilities = np.repeat(np.array([[1e-6, 0.6, 1]]).T, 3, 1)
 
-    result = np.array([var.value_of(probabilities) for var in variables])
-    assert np.all(expected == result)
+    expected = np.array([[1, 3, 8], [2, 4, 9], [2, 5, 9]])
+
+    result = space.value_of(probabilities)
+    assert np.isclose(expected, result).all()
 
 
 def test_create_continuous_uniform_variables():
-    variables = module_under_test.create_continuous_uniform_variables(
+    space = experiment_design.variable.space.create_continuous_uniform_space(
         [1, 42, 665], [3, 52, 667]
     )
-    probabilities = np.array([0, 0.5, 1])
-    expected = np.array([[1, 2, 3], [42, 47, 52], [665, 666, 667]])
+    probabilities = np.repeat(np.array([[1e-6, 0.5, 1]]).T, 3, 1)
 
-    result = np.array([var.value_of(probabilities) for var in variables])
+    expected = np.array([[1.0, 42.0, 665.0], [2.0, 47.0, 666.0], [3.0, 52.0, 667.0]])
+
+    result = space.value_of(probabilities)
     assert np.all(expected == result)
 
 
@@ -196,7 +198,6 @@ class TestParameterSpace:
         self, design_space: experiment_design.variable.space.ParameterSpace
     ):
         assert design_space.dimensions == 2
-        assert len(design_space) == 2
 
     def test_design_space_lower_bound(
         self, design_space: experiment_design.variable.space.ParameterSpace

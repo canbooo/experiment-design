@@ -1,8 +1,8 @@
 from dataclasses import dataclass
-from typing import Any, Callable, Protocol, Sequence
+from typing import Any, Callable, Protocol
 
 import numpy as np
-from scipy.stats import randint, rv_continuous, rv_discrete, uniform
+from scipy.stats import rv_continuous, rv_discrete, uniform
 
 # Following is ugly, but it is scipy's fault for not exposing rv_frozen
 # noinspection PyProtectedMember
@@ -183,60 +183,6 @@ class DiscreteVariable:
         return _change_field_representation(
             self, {"distribution": distribution_representation}
         )
-
-
-def create_discrete_uniform_variables(
-    discrete_sets: list[list[int | float]],
-) -> list[DiscreteVariable]:
-    """
-    Given sets of possible values, create corresponding discrete variables with equal probability of each value.
-
-    :param discrete_sets: list of possible values for each variable
-    :return: List discrete uniform variables with the same length as the discrete_sets
-    """
-    variables = []
-    for discrete_set in discrete_sets:
-        n_values = len(discrete_set)
-        if n_values < 2:
-            raise ValueError("At least two values are required for discrete variables")
-        # In the following, it is OK and even advantageous to have a mutable
-        # default argument as a very rare occasion. Therefore, we disable inspection.
-        # noinspection PyDefaultArgument
-        variables.append(
-            DiscreteVariable(
-                distribution=randint(0, n_values),
-                # Don't forget to bind the discrete_set below either by
-                # defining a kwarg as done here, or by generating in another
-                # scope, e.g. function. Otherwise, the last value of discrete_sets
-                # i.e. the last entry of discrete_sets will be used for all converters
-                # Check https://stackoverflow.com/questions/19837486/lambda-in-a-loop
-                # for a description as this is expected python behaviour.
-                value_mapper=lambda x, values=sorted(discrete_set): values[int(x)],
-                inverse_value_mapper=lambda x,
-                values=sorted(discrete_set): values.index(x),
-            )
-        )
-    return variables
-
-
-def create_continuous_uniform_variables(
-    lower_bounds: Sequence[float], upper_bounds: Sequence[float]
-) -> list[ContinuousVariable]:
-    """
-    Given lower and upper bounds, create uniformly distributed variables.
-
-    :param lower_bounds: Array with shape (n_dim,) representing the lower bounds of the uniform variables
-    :param upper_bounds: Array with shape (n_dim,) representing the upper bounds of the uniform variables
-    :return: List continuous uniform variables with the same length as the bounds
-    """
-    if len(lower_bounds) != len(upper_bounds):
-        raise ValueError(
-            "Number of lower bounds has to be equal to the number of upper bounds"
-        )
-    variables = []
-    for lower, upper in zip(lower_bounds, upper_bounds):
-        variables.append(ContinuousVariable(lower_bound=lower, upper_bound=upper))
-    return variables
 
 
 class Variable(Protocol):

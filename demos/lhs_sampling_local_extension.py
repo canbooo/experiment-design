@@ -6,10 +6,7 @@ from scipy.spatial.distance import pdist
 
 from experiment_design.orthogonal_sampling import OrthogonalSamplingDesigner
 from experiment_design.scorers import create_default_scorer_factory, select_local
-from experiment_design.variable import (
-    ParameterSpace,
-    create_continuous_uniform_variables,
-)
+from experiment_design.variable import ParameterSpace, create_continuous_uniform_space
 
 
 def create_iterative_plot(
@@ -64,7 +61,7 @@ if __name__ == "__main__":
     old_sample = None
     for i_step, ub in enumerate([2, 1.5, 1.0, 0.5]):
         lb = -ub
-        variables = create_continuous_uniform_variables([lb, lb], [ub, ub])
+        variables = create_continuous_uniform_space([lb, lb], [ub, ub])
         space = ParameterSpace(variables)
         sample_size = max(start_sample_size * 2 ** (i_step - 1), start_sample_size)
         new_sample = designer.design(

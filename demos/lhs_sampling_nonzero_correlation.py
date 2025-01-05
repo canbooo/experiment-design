@@ -7,7 +7,7 @@ from experiment_design.orthogonal_sampling import OrthogonalSamplingDesigner
 from experiment_design.scorers import create_default_scorer_factory
 from experiment_design.variable import (
     ParameterSpace,
-    create_continuous_uniform_variables,
+    create_continuous_uniform_space,
     create_correlation_matrix,
 )
 
@@ -60,7 +60,7 @@ if __name__ == "__main__":
     # double the sample size each step so that LHS constraint can always be fulfilled
     sample_size = 32
     lb, ub = -2, 2
-    variables = create_continuous_uniform_variables([lb, lb], [ub, ub])
+    variables = create_continuous_uniform_space([lb, lb], [ub, ub])
     correlations = [-0.9, -0.5, 0.5, 0.9]
 
     does, grids = [], []
