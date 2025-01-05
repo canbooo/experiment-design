@@ -45,7 +45,21 @@ def _create_distribution_representation(distribution: rv_frozen) -> str:
 
 @dataclass
 class ContinuousVariable:
-    """A variable with continuous distribution"""
+    """
+    A variable with continuous distribution
+
+    :param distribution: rv_frozen instance representing the distribution. If None (default), it will be set to uniform
+        between the passed lower_bound and upper_bound
+    :param lower_bound: Lower bound for the variable. If None (default), left support boundary of the distribution will
+        be used in case the distribution is bounded. Otherwise, distribution.ppf(infinite_bound_probability_tolerance)
+        will be used.
+    :param upper_bound: Upper bound for the variable. If None (default), right support boundary of the distribution will
+        be used in case the distribution is bounded. Otherwise, distribution.ppf(1 - infinite_bound_probability_tolerance)
+        will be used.
+    :param infinite_bound_probability_tolerance: If the variable is unbounded, this will be used to extract finite bounds
+        as described in lower_bound and upper_bound descriptions. (Default: 1e-6)
+
+    """
 
     distribution: rv_frozen | None = None
     lower_bound: float | None = None
@@ -112,7 +126,19 @@ class ContinuousVariable:
 
 @dataclass
 class DiscreteVariable:
-    """A variable with discrete distribution"""
+    """
+    A variable with discrete distribution
+
+    :param distribution: rv_frozen instance representing the distribution. If None (default), it will be set to uniform between
+        the passed lower_bound and upper_bound
+    :param value_mapper: Given an integer, i.e. an ordinal encoding, this is expected to return the corresponding
+        discrete value of the underlying set of possible values. (Default: lambda x: x)
+    :param inverse_value_mapper: Given a discrete value, this is expected to return the corresponding integer value,
+        i.e. ordinal encoding. (Default: lambda x: x)
+    :param infinite_bound_probability_tolerance: If the variable is unbounded, this will be used to extract finite bounds
+        as described in lower_bound and upper_bound descriptions. (Default: 1e-6)
+
+    """
 
     distribution: rv_frozen
     value_mapper: Callable[[float], float | int] = lambda x: x
@@ -160,9 +186,14 @@ class DiscreteVariable:
 
 
 def create_discrete_uniform_variables(
-    discrete_sets: list[list[int | float | str]],
+    discrete_sets: list[list[int | float]],
 ) -> list[DiscreteVariable]:
-    """Given sets of possible values, create corresponding discrete variables with equal probability of each value."""
+    """
+    Given sets of possible values, create corresponding discrete variables with equal probability of each value.
+
+    :param discrete_sets: list of possible values for each variable
+    :return: List discrete uniform variables with the same length as the discrete_sets
+    """
     variables = []
     for discrete_set in discrete_sets:
         n_values = len(discrete_set)
@@ -189,20 +220,30 @@ def create_discrete_uniform_variables(
 
 
 def create_continuous_uniform_variables(
-    continuous_lower_bounds: Sequence[float], continuous_upper_bounds: Sequence[float]
+    lower_bounds: Sequence[float], upper_bounds: Sequence[float]
 ) -> list[ContinuousVariable]:
-    """Given lower and upper bounds, create uniform variables."""
-    if len(continuous_lower_bounds) != len(continuous_upper_bounds):
+    """
+    Given lower and upper bounds, create uniformly distributed variables.
+
+    :param lower_bounds: Array with shape (n_dim,) representing the lower bounds of the uniform variables
+    :param upper_bounds: Array with shape (n_dim,) representing the upper bounds of the uniform variables
+    :return: List continuous uniform variables with the same length as the bounds
+    """
+    if len(lower_bounds) != len(upper_bounds):
         raise ValueError(
             "Number of lower bounds has to be equal to the number of upper bounds"
         )
     variables = []
-    for lower, upper in zip(continuous_lower_bounds, continuous_upper_bounds):
+    for lower, upper in zip(lower_bounds, upper_bounds):
         variables.append(ContinuousVariable(lower_bound=lower, upper_bound=upper))
     return variables
 
 
 class Variable(Protocol):
+    """
+    :meta private:
+    """
+
     @property
     def distribution(self) -> rv_frozen:
         """Distribution of the variable"""
@@ -225,7 +266,12 @@ class Variable(Protocol):
 def create_variables_from_distributions(
     distributions: list[rv_frozen],
 ) -> list[ContinuousVariable | DiscreteVariable]:
-    """Given a list of distributions, create the corresponding continuous or discrete variables."""
+    """
+    Given a list of distributions, create the corresponding continuous or discrete variables.
+
+    :param distributions: Frozen scipy distributions each representing a marginal variable
+    :return: List of variables according to the passed distributions
+    """
     variables = []
     for dist in distributions:
         if _is_frozen_discrete(dist):
