@@ -24,4 +24,5 @@ cases and seeks to provide a space-filling design of experiments with small corr
    :caption: Contents:
 
    quickstart
+   orthogonal_sampling
    api_reference
