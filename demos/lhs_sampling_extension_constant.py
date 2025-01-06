@@ -4,8 +4,10 @@ import numpy as np
 from cycler import cycler
 from scipy.spatial.distance import pdist
 
-from experiment_design.orthogonal_sampling import OrthogonalSamplingDesigner
-from experiment_design.variable import ParameterSpace, create_continuous_uniform_space
+from experiment_design import (
+    OrthogonalSamplingDesigner,
+    create_continuous_uniform_space,
+)
 
 
 def create_iterative_plot(
@@ -53,15 +55,14 @@ if __name__ == "__main__":
     # double the sample size each step so that LHS constraint can always be fulfilled
     sample_size = 4  # For initial DoE
     lb, ub = -2, 2
-    variables = create_continuous_uniform_space([lb, lb], [ub, ub])
-    space = ParameterSpace(variables)
+    space = create_continuous_uniform_space([lb, lb], [ub, ub])
     designer = OrthogonalSamplingDesigner(inter_bin_randomness=0.8)
 
     does, grids = [], []
     old_sample = None
     for i_step in range(9):
         new_sample = designer.design(
-            space, sample_size, steps=1000, old_sample=old_sample, verbose=2
+            space, sample_size, steps=1000, old_sample=old_sample
         )
         does.append(new_sample)
         sample_size = 1  # For all extensions

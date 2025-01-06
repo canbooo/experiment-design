@@ -5,11 +5,7 @@ from cycler import cycler
 from scipy import stats
 from scipy.spatial.distance import pdist
 
-from experiment_design.orthogonal_sampling import OrthogonalSamplingDesigner
-from experiment_design.variable import (
-    ParameterSpace,
-    create_variables_from_distributions,
-)
+from experiment_design import OrthogonalSamplingDesigner, ParameterSpace
 
 
 def create_iterative_plot(
@@ -57,8 +53,7 @@ if __name__ == "__main__":
     # double the sample size each step so that LHS constraint can always be fulfilled
     start_sample_size = 4
 
-    variables = create_variables_from_distributions([stats.norm() for _ in range(2)])
-    space = ParameterSpace(variables)
+    space = ParameterSpace([stats.norm() for _ in range(2)])
     designer = OrthogonalSamplingDesigner(inter_bin_randomness=0.8)
 
     does, grids = [], []
@@ -66,7 +61,7 @@ if __name__ == "__main__":
     for i_step in range(4):
         sample_size = max(start_sample_size * 2 ** (i_step - 1), start_sample_size)
         new_sample = designer.design(
-            space, sample_size, steps=1000, old_sample=old_sample, verbose=2
+            space, sample_size, steps=1000, old_sample=old_sample
         )
         does.append(new_sample)
 

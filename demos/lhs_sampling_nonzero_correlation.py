@@ -3,13 +3,12 @@ import matplotlib.pyplot as plt
 import numpy as np
 from cycler import cycler
 
-from experiment_design.orthogonal_sampling import OrthogonalSamplingDesigner
-from experiment_design.scorers import create_default_scorer_factory
-from experiment_design.variable import (
-    ParameterSpace,
+from experiment_design import (
+    OrthogonalSamplingDesigner,
     create_continuous_uniform_space,
-    create_correlation_matrix,
 )
+from experiment_design.scorers import create_default_scorer_factory
+from experiment_design.variable import create_correlation_matrix
 
 
 def create_iterative_plot(
@@ -34,9 +33,6 @@ def create_iterative_plot(
 
 
 def create_title(doe, target_corr):
-    target_corr_mat = create_correlation_matrix(
-        target_correlation=target_corr, num_variables=doe.shape[1]
-    )
     corr_error = np.max(np.abs(np.corrcoef(doe, rowvar=False) - target_corr_mat))
     return f"Target correlation: {target_corr} Max. correlation error: {corr_error:.3f}"
 
@@ -60,7 +56,7 @@ if __name__ == "__main__":
     # double the sample size each step so that LHS constraint can always be fulfilled
     sample_size = 32
     lb, ub = -2, 2
-    variables = create_continuous_uniform_space([lb, lb], [ub, ub])
+    space = create_continuous_uniform_space([lb, lb], [ub, ub])
     correlations = [-0.9, -0.5, 0.5, 0.9]
 
     does, grids = [], []
@@ -72,13 +68,16 @@ if __name__ == "__main__":
                 distance_score_weight=0.1,
             )
         )
-        space = ParameterSpace(variables, correlation=corr)
-        new_doe = designer.design(space, sample_size, steps=1000, verbose=2)
+        target_corr_mat = create_correlation_matrix(
+            target_correlation=corr, num_variables=space.dimensions
+        )
+        space.correlation = target_corr_mat
+        new_doe = designer.design(space, sample_size, steps=1000)
         does.append(new_doe)
         new_grid = np.linspace(lb, ub, new_doe.shape[0] + 1)
         grids.append(new_grid)
         old_sample = np.concatenate(does, axis=0)
-        title = create_title(new_doe, corr)
+        title = create_title(new_doe, target_corr_mat)
         fig, ax = create_iterative_plot(does, step_grids=grids)
         ax.set_title(title)
         plt.axis("off")
