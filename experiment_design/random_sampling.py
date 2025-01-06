@@ -127,12 +127,12 @@ def sample_from(
         else iman_connover_transformation
     )
     for k in range(3):
-        doe = uniform(0, 1).rvs((sample_size, len(space)))
+        doe = uniform(0, 1).rvs((sample_size, space.dimensions))
 
         doe = space.value_of(doe)
 
         if (
-            np.isclose(space.correlation, np.eye(len(space))).all()
+            np.isclose(space.correlation, np.eye(space.dimensions)).all()
             and not exact_correlation
         ):
             return doe
