@@ -173,6 +173,7 @@ the same bounds as before. Next, we map them back to the original space. The cod
 .. image:: images/os_grid.png
     :align: center
 
+
 .. code:: python
 
     np.random.seed(1337)

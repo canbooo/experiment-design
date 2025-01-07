@@ -56,7 +56,6 @@ class ContinuousVariable:
     :param upper_bound: Upper bound for the variable. If None (default), right support boundary of the distribution will
         be used in case the distribution is bounded. Otherwise, distribution.ppf(1 - infinite_bound_probability_tolerance)
         will be used.
-
     """
 
     distribution: rv_frozen | None = None
@@ -99,8 +98,8 @@ class ContinuousVariable:
         Provide a finite lower bound of the variable even if it was not provided by the user.
 
         :param infinite_bound_probability_tolerance: If the variable is unbounded and no explicit lower_bound was
-        passed, this will be used to extract finite bounds as described in lower_bound and upper_bound descriptions.
-        (Default: 1e-6)
+            passed, this will be used to extract finite bounds as described in lower_bound and upper_bound descriptions.
+            (Default: 1e-6)
         """
         if self.lower_bound is not None:
             return self.lower_bound
@@ -115,8 +114,9 @@ class ContinuousVariable:
         """Provide a finite upper bound of the variable even if it was not provided by the user.
 
         :param infinite_bound_probability_tolerance: If the variable is unbounded and no explicit lower_bound was
-        passed, this will be used to extract finite bounds as described in lower_bound and upper_bound descriptions.
-        (Default: 1e-6)
+            passed, this will be used to extract finite bounds as described in lower_bound and upper_bound descriptions.
+            (Default: 1e-6)
+
         """
         if self.upper_bound is not None:
             return self.upper_bound
@@ -173,8 +173,8 @@ class DiscreteVariable:
         Provide a finite lower bound of the variable even if it was not provided by the user.
 
         :param infinite_bound_probability_tolerance: If the variable is unbounded and no explicit lower_bound was
-        passed, this will be used to extract finite bounds as described in lower_bound and upper_bound descriptions.
-        (Default: 1e-6)
+            passed, this will be used to extract finite bounds as described in lower_bound and upper_bound descriptions.
+            (Default: 1e-6)
         """
         support = self.distribution.support()
         if np.isfinite(support[0]):
@@ -188,8 +188,8 @@ class DiscreteVariable:
         Provide a finite upper bound of the variable even if it was not provided by the user.
 
         :param infinite_bound_probability_tolerance: If the variable is unbounded and no explicit lower_bound was
-        passed, this will be used to extract finite bounds as described in lower_bound and upper_bound descriptions.
-        (Default: 1e-6)
+            passed, this will be used to extract finite bounds as described in lower_bound and upper_bound descriptions.
+            (Default: 1e-6)
         """
         support = self.distribution.support()
         if np.isfinite(support[-1]):
@@ -206,9 +206,7 @@ class DiscreteVariable:
 
 
 class Variable(Protocol):
-    """
-    :meta private:
-    """
+    """A protocol to represent the expected methods of valid Variable objects"""
 
     @property
     def distribution(self) -> rv_frozen:
@@ -227,8 +225,8 @@ class Variable(Protocol):
         Provide a finite upper bound of the variable even if it was not provided by the user.
 
         :param infinite_bound_probability_tolerance: If the variable is unbounded and no explicit lower_bound was
-        passed, this will be used to extract finite bounds as described in lower_bound and upper_bound descriptions.
-        (Default: 1e-6)
+            passed, this will be used to extract finite bounds as described in lower_bound and upper_bound descriptions.
+            (Default: 1e-6)
         """
 
     def finite_upper_bound(
@@ -238,8 +236,8 @@ class Variable(Protocol):
         Provide a finite upper bound of the variable even if it was not provided by the user.
 
         :param infinite_bound_probability_tolerance: If the variable is unbounded and no explicit lower_bound was
-        passed, this will be used to extract finite bounds as described in lower_bound and upper_bound descriptions.
-        (Default: 1e-6)
+            passed, this will be used to extract finite bounds as described in lower_bound and upper_bound descriptions.
+            (Default: 1e-6)
         """
 
 
