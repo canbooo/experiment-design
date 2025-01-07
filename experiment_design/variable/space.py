@@ -20,6 +20,8 @@ class ParameterSpace:
     :param correlation: A float or asymmetric matrix with shape (len(variables), len(variables)), representing the
         linear dependency between the dimensions. If a float is passed, all non-diagonal entries of the unit matrix will
         be set to this value.
+    :param infinite_bound_probability_tolerance: If the variable is unbounded, this will be used to extract finite bounds
+        as described in lower_bound and upper_bound descriptions. (Default: 1e-6)
     """
 
     variables: (
@@ -29,6 +31,8 @@ class ParameterSpace:
         | list[rv_frozen]
     )
     correlation: float | np.ndarray | None = None
+    infinite_bound_probability_tolerance: float = 1e-6
+
     _lower_bound: np.ndarray = field(init=False, repr=False, default=None)
     _upper_bound: np.ndarray = field(init=False, repr=False, default=None)
 
@@ -53,8 +57,12 @@ class ParameterSpace:
 
         lower, upper = [], []
         for var in self.variables:
-            lower.append(var.finite_lower_bound)
-            upper.append(var.finite_upper_bound)
+            lower.append(
+                var.finite_lower_bound(self.infinite_bound_probability_tolerance)
+            )
+            upper.append(
+                var.finite_upper_bound(self.infinite_bound_probability_tolerance)
+            )
         self._lower_bound = np.array(lower)
         self._upper_bound = np.array(upper)
 
