@@ -1,3 +1,4 @@
+.. |CDF| replace:: :abbr:`CDF (Cumulative Distribution Function)`
 .. |DoE| replace:: :abbr:`DoE (Design of Experiments)`
 .. |LHS| replace:: :abbr:`LHS (Latin Hypercube Sampling)`
 
@@ -82,8 +83,6 @@ start from the same |DoE|, we set the same seed but use the default number of st
 
 .. code:: python
 
-    from experiment_design import create_continuous_uniform_space, OrthogonalSamplingDesigner
-
     np.random.seed(1337)
     doe2 = designer.design(space, sample_size=8)
     plt.scatter(doe2[:, 0], doe2[:, 1], label="Final design")
@@ -99,6 +98,7 @@ deactivate the optimization by setting :code:`steps=1` as we did before.
 .. code:: python
 
     from experiment_design import RandomSamplingDesigner
+
     doe3 = RandomSamplingDesigner().design(space, sample_size=8, steps=1)
     plt.scatter(doe3[:, 0], doe3[:, 1], label="Random sampling")
     plt.legend()
@@ -133,4 +133,53 @@ Nevertheless, as we will see later, we can change the weights we use arbitrarily
 In any case, both |LHS| designs achieve better metrics compared to random sampling.
 
 Now that we have showcased how |LHS| samples are generated and that it may achieve a higher quality compared to random
-sampling, let us talk about orthogonal sampling and how it is useful for statistical inference.
+sampling, let us talk about orthogonal sampling and why it is useful for statistical inference.
+
+
+Orthogonal sampling
+--------------------
+
+It is straightforward to generalize |LHS| to orthogonal sampling, where we generate an |LHS| design in :math:`[0, 1]^d`,
+in a d-dimensional parameter space, which we interpret as probabilities and use the inverse |CDF| functions of the
+marginal variables to map them to actual values. Let us see this in action, again in a 2-dimensional space for
+visualization purposes. Let us define two Gaussian variables :math:`X_1, X_2 \sim \mathcal{N}(2, 1)` with a mean of
+2 and a variance of 1. Again, to generate 8 sample, we start by partitioning the probability space into 8, which yields
+the same bounds as before. Next, we map them back to the original space. The code would look like this:
+
+
+.. code:: python
+
+    import matplotlib.pyplot as plt
+    import numpy as np
+    from scipy import stats
+
+    from experiment_design import ParameterSpace, OrthogonalSamplingDesigner
+
+    space = ParameterSpace(variables=[stats.norm(2, 1) for _ in range(2)],
+                           infinite_bound_probability_tolerance=2.5e-2)
+    probability_bin_edges = np.linspace(0, 1, 9)
+    # create an array of probabilities, where each column represents a variable
+    probability_bin_edges = np.c_[probability_bin_edges, probability_bin_edges]
+    bin_edges = space.value_of(probability_bin_edges)  # This internally calls scipy_distribution.ppf
+    bin_edges[0] = space.lower_bound
+    bin_edges[-1] = space.upper_bound
+
+    plt.figure()
+    for x in bin_edges:
+        plt.plot([x, x], [bin_edges[0, 1], bin_edges[-1, 1]], c="k")
+        plt.plot([bin_edges[0, 0], bin_edges[-1, 0]], [x, x], c="k")
+
+
+.. image:: images/os_grid.png
+    :align: center
+
+.. code:: python
+
+    np.random.seed(1337)
+    designer = OrthogonalSamplingDesigner(inter_bin_randomness=0.)
+    doe = designer.design(space, sample_size=8)
+    plt.scatter(doe[:, 0], doe[:, 1])
+
+
+.. image:: images/os_doe.png
+    :align: center
