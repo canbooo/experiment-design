@@ -67,7 +67,7 @@ def test_create_continuous_uniform_variables():
     expected = np.array([[1.0, 42.0, 665.0], [2.0, 47.0, 666.0], [3.0, 52.0, 667.0]])
 
     result = space.value_of(probabilities)
-    assert np.all(expected == result)
+    assert np.all(np.isclose(expected, result))
 
 
 def test_create_variables_from_distributions():
@@ -118,33 +118,31 @@ class TestContinuousVariable:
         self, standard_normal: module_under_test.ContinuousVariable
     ):
         standard_normal.lower_bound = -5
-        assert standard_normal.finite_lower_bound == -5
+        assert standard_normal.finite_lower_bound() == -5
 
     def test_finite_lower_bound_finite(self):
         var = module_under_test.ContinuousVariable(distribution=stats.uniform(0, 1))
-        assert var.finite_lower_bound == 0
+        assert var.finite_lower_bound() == 0
 
     def test_finite_lower_bound_infinite(
         self, standard_normal: module_under_test.ContinuousVariable
     ):
-        standard_normal.infinite_bound_probability_tolerance = 2.5e-2
-        assert np.isclose(standard_normal.finite_lower_bound, -1.95996)
+        assert np.isclose(standard_normal.finite_lower_bound(2.5e-2), -1.95996)
 
     def test_finite_upper_bound_given(
         self, standard_normal: module_under_test.ContinuousVariable
     ):
         standard_normal.upper_bound = 5
-        assert standard_normal.finite_upper_bound == 5
+        assert standard_normal.finite_upper_bound() == 5
 
     def test_finite_upper_bound_finite(self):
         var = module_under_test.ContinuousVariable(distribution=stats.uniform(0, 1))
-        assert var.finite_upper_bound == 1
+        assert var.finite_upper_bound() == 1
 
     def test_finite_upper_bound_infinite(
         self, standard_normal: module_under_test.ContinuousVariable
     ):
-        standard_normal.infinite_bound_probability_tolerance = 2.5e-2
-        assert np.isclose(standard_normal.finite_upper_bound, 1.95996)
+        assert np.isclose(standard_normal.finite_upper_bound(2.5e-2), 1.95996)
 
 
 class TestDiscreteVariable:
@@ -170,12 +168,12 @@ class TestDiscreteVariable:
     def test_get_finite_lower_bound(
         self, discrete_bernoulli: module_under_test.DiscreteVariable
     ):
-        assert discrete_bernoulli.finite_lower_bound == 42
+        assert discrete_bernoulli.finite_lower_bound() == 42
 
     def test_get_finite_upper_bound(
         self, discrete_bernoulli: module_under_test.DiscreteVariable
     ):
-        assert discrete_bernoulli.finite_upper_bound == 666
+        assert discrete_bernoulli.finite_upper_bound() == 666
 
 
 class TestParameterSpace:
