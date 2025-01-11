@@ -107,9 +107,9 @@ def calculate_optimization_step_numbers(
     """
     if steps is None:
         if sample_size <= 128:
-            steps = 20000
+            steps = 20_000
         else:
-            steps = 2000
+            steps = 2_000
     init_steps = max(1, round(proportion * steps))
     opt_steps = max(0, steps - init_steps)
     return init_steps, opt_steps
