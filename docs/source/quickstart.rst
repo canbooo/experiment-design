@@ -19,8 +19,8 @@ reproduce the code in this documentation, you will also need to install it.
 Create and extend experiment designs
 ------------------------------------
 
-Let us first create an `Latin hypercube sampling <https://en.wikipedia.org/wiki/Latin_hypercube_sampling>`_. Later, we
-will talk about why this is superior to random sampling.
+Let us first create a Latin hypercube sampling (`wikipedia <https://en.wikipedia.org/wiki/Latin_hypercube_sampling>`_).
+Later, we will talk about why this is superior to random sampling.
 
 .. code:: python
 
