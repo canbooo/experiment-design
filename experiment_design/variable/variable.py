@@ -38,7 +38,7 @@ def _change_field_representation(
 def _create_distribution_representation(distribution: rv_frozen) -> str:
     """Create a readable representation of rv_frozen instances"""
     args = ", ".join([str(a) for a in distribution.args])
-    kwargs = ", ".join([f"{k}={v}" for k, v in distribution.kwds])
+    kwargs = ", ".join([f"{k}={v}" for k, v in distribution.kwds.items()])
     params = [a for a in [args, kwargs] if a]
     return f"{distribution.dist.name}({', '.join(params)})"
 
