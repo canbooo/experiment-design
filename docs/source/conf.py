@@ -8,6 +8,8 @@
 import os
 import sys
 
+from sphinx.builders.html import StandaloneHTMLBuilder
+
 sys.path.insert(0, os.path.abspath("../../experiment_design/"))
 
 project = "experiment-design"
@@ -53,3 +55,10 @@ html_theme_options = {
     "includehidden": True,
     "titles_only": False,
 }
+
+StandaloneHTMLBuilder.supported_image_types = [
+    "image/svg+xml",
+    "image/gif",
+    "image/png",
+    "image/jpeg",
+]
