@@ -30,7 +30,7 @@ jobs:
           poetry install --with dev --no-interaction
       - name: Build coverage file
         run: |
-          poetry run pytest --junitxml=pytest.xml --cov-report=term-missing:skip-covered --cov=experiment_design tests/ | tee pytest-coverage.txt
+          pytest --cov-branch --cov-report=xml
       - uses: MishaKav/pytest-coverage-comment@main
         id: coverageComment
         with:
@@ -53,13 +53,9 @@ jobs:
 
           echo "Not Success Test Info - ${{ steps.coverageComment.outputs.notSuccessTestInfo }}"
 
-      - name: Create the Badge
-        uses: schneegans/dynamic-badges-action@v1.7.0
+      - name: Upload coverage reports to Codecov
+        uses: codecov/codecov-action@v5
         with:
-          auth: ${{ secrets.GIST_TOKEN }}
-          gistID: 6e8333ea5cf30b2e8c83d55eee51525b
-          filename: coverage_token.json
-          label: Coverage
-          message: ${{ steps.coverageComment.outputs.coverage }}
-          color: ${{ steps.coverageComment.outputs.color }}
-          namedLogo: python
+          files: ./pytest.xml
+          token: ${{ secrets.CODECOV_TOKEN }}
+          slug: canbooo/experiment-design
