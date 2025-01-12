@@ -32,11 +32,7 @@ jobs:
       - name: Execute script to build our documentation and update pages
         run: |
           echo local
-          ls /home/runner/.local
-          echo pythonpath
-          echo $PYTHONPATH
-          echo localllib
-          ls /home/runner/.local/lib
+          ls /home/runner/.cache/pypoetry/virtualenv
           cd docs
           make clean
           make html
