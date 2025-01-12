@@ -29,6 +29,7 @@ jobs:
           git clone "https://token:${GITHUB_TOKEN}@github.com/${GITHUB_REPOSITORY}.git" .
           pip install poetry
           poetry install --with docs
+          apt-get install python3-sphinx
         shell: bash
 
       - name: Execute script to build our documentation and update pages
