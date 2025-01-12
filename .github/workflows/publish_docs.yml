@@ -34,6 +34,9 @@ jobs:
           which python
           which pip
           which poetry
+          echo $PYTHONPATH
+          ls /home/runner/.local/bin/
+          ls /home/runner/.local
           cd docs
           make clean
           make html
