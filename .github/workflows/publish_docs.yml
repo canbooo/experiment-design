@@ -27,6 +27,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           pip install poetry
+          poetry self add poetry-plugin-shell
           poetry install --with docs --no-root
         shell: bash
       - name: Execute script to build our documentation and update pages
