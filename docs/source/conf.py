@@ -8,6 +8,7 @@
 import os
 import sys
 
+from git import Repo
 from sphinx.builders.html import StandaloneHTMLBuilder
 
 sys.path.insert(0, os.path.abspath("../../experiment_design/"))
@@ -26,6 +27,7 @@ extensions = [
     "sphinx_autodoc_typehints",
     "sphinx.ext.napoleon",
     "sphinx.ext.viewcode",
+    "sphinx.ext.githubpages",
 ]
 
 
@@ -62,3 +64,44 @@ StandaloneHTMLBuilder.supported_image_types = [
     "image/png",
     "image/jpeg",
 ]
+
+# SET CURRENT_VERSION
+
+
+if "REPO_NAME" in os.environ:
+    REPO_NAME = os.environ["REPO_NAME"]
+else:
+    REPO_NAME = ""
+
+try:
+    html_context
+except NameError:
+    html_context = dict()
+html_context["display_lower_left"] = True
+
+repo = Repo(search_parent_directories=True)
+
+if "current_version" in os.environ:
+    # get the current_version env var set by buildDocs.sh
+    current_version = os.environ["current_version"]
+else:
+    # the user is probably doing `make html`
+    # set this build's current version by looking at the branch
+    current_version = repo.active_branch.name
+
+# tell the theme which version we're currently on ('current_version' affects
+# the lower-left rtd menu and 'version' affects the logo-area version)
+html_context["current_version"] = current_version
+html_context["version"] = current_version
+
+# POPULATE LINKS TO OTHER VERSIONS
+html_context["versions"] = list()
+
+versions = [branch.name for branch in repo.branches]
+for version in versions:
+    html_context["versions"].append((version, "/" + REPO_NAME + "/" + version + "/"))
+
+html_context["display_github"] = True
+html_context["github_user"] = "canbooo"
+html_context["github_repo"] = "experiment-design"
+html_context["github_version"] = "master/docs/"
