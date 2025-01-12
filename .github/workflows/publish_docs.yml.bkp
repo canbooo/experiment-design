@@ -31,10 +31,14 @@ jobs:
           poetry install --with docs
         shell: bash
 
-      - uses: actions/checkout@v1
-      - uses: ammaraskar/sphinx-action@master
-        with:
-          docs-folder: "docs/"
+      - name: Execute script to build our documentation and update pages
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          cd docs
+          make clean
+          make html
+        shell: bash
       - name: Check ls
         run: |
           ls docs
