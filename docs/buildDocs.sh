@@ -1,4 +1,5 @@
 #!/bin/bash
+set -x
 ################################################################################
 # Important: This file is copied from https://github.com/maltfield/rtd-github-pages
 # following the blog post https://tech.michaelaltfield.net/2020/07/18/sphinx-rtd-github-pages-1/
@@ -20,9 +21,9 @@
 ###################
 
 apt-get update
-apt-get -y install git rsync python3-sphinx python3-sphinx-rtd-theme python3-stemmer python3-git python3-pip python3-virtualenv python3-setuptools
+apt-get -y install git rsync python3-sphinx python3-stemmer python3-git python3-pip python3-virtualenv python3-setuptools
 
-python3 -m pip install --upgrade rinohtype pygments
+python3 -m pip install --upgrade rinohtype pygments python3-sphinx-rtd-theme
 
 #####################
 # DECLARE VARIABLES #
