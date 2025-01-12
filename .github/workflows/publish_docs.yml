@@ -27,12 +27,14 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           pip install poetry
-          poetry self add poetry-plugin-shell
+          python -m venv experiment-design-env
+          source experiment-design-env/bin/activate
           poetry install --with docs --no-root
         shell: bash
       - name: Execute script to build our documentation and update pages
         run: |
           cd docs
+          echo $PATH
           poetry shell make clean
           poetry shell make html
         shell: bash
