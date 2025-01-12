@@ -32,6 +32,7 @@ jobs:
         run: |
           poetry run pytest --junitxml=pytest.xml --cov-report=term-missing:skip-covered --cov=experiment_design tests/ | tee pytest-coverage.txt
       - uses: MishaKav/pytest-coverage-comment@main
+        id: coverageComment
         with:
           pytest-coverage-path: ./pytest-coverage.txt
           junitxml-path: ./pytest.xml
