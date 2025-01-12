@@ -19,6 +19,7 @@ jobs:
           apt-get update
           apt-get install -y git
           git clone "https://token:${GITHUB_TOKEN}@github.com/${GITHUB_REPOSITORY}.git" .
+          chmod +x docs/buildDocs.sh
         shell: bash
 
       - name: Execute script to build our documentation and update pages
