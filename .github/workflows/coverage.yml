@@ -30,11 +30,11 @@ jobs:
           poetry install --with dev --no-interaction
       - name: Build coverage file
         run: |
-          pytest --junitxml=pytest.xml --cov-report=term-missing:skip-covered --cov=app tests/ | tee pytest-coverage.txt
+          poetry run pytest --junitxml=pytest.xml --cov-report=term-missing:skip-covered --cov=app tests/ | tee pytest-coverage.txt
       - uses: MishaKav/pytest-coverage-comment@main
         with:
           pytest-coverage-path: ./pytest-coverage.txt
-          junitxml-path: ./data/pytest.xml
+          junitxml-path: ./pytest.xml
 
       - name: Check the output coverage
         run: |
@@ -58,7 +58,7 @@ jobs:
           auth: ${{ secrets.GIST_TOKEN }}
           gistID: 6e8333ea5cf30b2e8c83d55eee51525b
           filename: coverage_token.json
-          label: Coverage Report
+          label: Coverage
           message: ${{ steps.coverageComment.outputs.coverage }}
           color: ${{ steps.coverageComment.outputs.color }}
           namedLogo: python
