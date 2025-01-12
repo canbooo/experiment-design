@@ -21,18 +21,23 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-
+      - uses: actions/checkout@v4
       - name: Install dependencies
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          git clone "https://token:${GITHUB_TOKEN}@github.com/${GITHUB_REPOSITORY}.git" .
           pip install poetry
-          poetry install --with docs
+          poetry install --with docs --no-root
         shell: bash
-      - uses: ammaraskar/sphinx-action@master
-        with:
-          docs-folder: "docs/"
+      - name: Execute script to build our documentation and update pages
+        run: |
+          which python
+          which pip
+          which poetry
+          cd docs
+          make clean
+          make html
+        shell: bash
       - name: Check ls
         run: |
           ls docs
