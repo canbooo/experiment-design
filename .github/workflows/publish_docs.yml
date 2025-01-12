@@ -34,9 +34,10 @@ jobs:
       - name: Execute script to build our documentation and update pages
         run: |
           cd docs
+          source experiment-design-env/bin/activate
           echo $PATH
-          poetry shell make clean
-          poetry shell make html
+          make clean
+          make html
         shell: bash
       - name: Check ls
         run: |
