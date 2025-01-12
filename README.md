@@ -1,3 +1,4 @@
+![PyPI - Version](https://img.shields.io/pypi/v/experiment-design)
 [![tests](https://github.com/canbooo/experimental-design/actions/workflows/tests.yml/badge.svg)](https://github.com/canbooo/experimental-design/actions/workflows/tests.yml)
 
 # `experiment-design`: Tools to create and extend experiment plans
