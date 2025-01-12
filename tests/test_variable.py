@@ -47,25 +47,27 @@ def test_is_frozen_continuous():
 
 
 def test_create_continuous_discrete_uniform_variables():
-    variables = module_under_test.create_discrete_uniform_variables(
+    space = experiment_design.variable.space.create_discrete_uniform_space(
         [[1, 2], [3, 4, 5], [9, 8]]
     )
-    probabilities = np.array([1e-6, 0.6, 1])
-    expected = np.array([[1, 2, 2], [3, 4, 5], [8, 9, 9]])
+    probabilities = np.repeat(np.array([[1e-6, 0.6, 1]]).T, 3, 1)
 
-    result = np.array([var.value_of(probabilities) for var in variables])
-    assert np.all(expected == result)
+    expected = np.array([[1, 3, 8], [2, 4, 9], [2, 5, 9]])
+
+    result = space.value_of(probabilities)
+    assert np.isclose(expected, result).all()
 
 
 def test_create_continuous_uniform_variables():
-    variables = module_under_test.create_continuous_uniform_variables(
+    space = experiment_design.variable.space.create_continuous_uniform_space(
         [1, 42, 665], [3, 52, 667]
     )
-    probabilities = np.array([0, 0.5, 1])
-    expected = np.array([[1, 2, 3], [42, 47, 52], [665, 666, 667]])
+    probabilities = np.repeat(np.array([[1e-6, 0.5, 1]]).T, 3, 1)
 
-    result = np.array([var.value_of(probabilities) for var in variables])
-    assert np.all(expected == result)
+    expected = np.array([[1.0, 42.0, 665.0], [2.0, 47.0, 666.0], [3.0, 52.0, 667.0]])
+
+    result = space.value_of(probabilities)
+    assert np.all(np.isclose(expected, result))
 
 
 def test_create_variables_from_distributions():
@@ -116,33 +118,31 @@ class TestContinuousVariable:
         self, standard_normal: module_under_test.ContinuousVariable
     ):
         standard_normal.lower_bound = -5
-        assert standard_normal.finite_lower_bound == -5
+        assert standard_normal.finite_lower_bound() == -5
 
     def test_finite_lower_bound_finite(self):
         var = module_under_test.ContinuousVariable(distribution=stats.uniform(0, 1))
-        assert var.finite_lower_bound == 0
+        assert var.finite_lower_bound() == 0
 
     def test_finite_lower_bound_infinite(
         self, standard_normal: module_under_test.ContinuousVariable
     ):
-        standard_normal.infinite_bound_probability_tolerance = 2.5e-2
-        assert np.isclose(standard_normal.finite_lower_bound, -1.95996)
+        assert np.isclose(standard_normal.finite_lower_bound(2.5e-2), -1.95996)
 
     def test_finite_upper_bound_given(
         self, standard_normal: module_under_test.ContinuousVariable
     ):
         standard_normal.upper_bound = 5
-        assert standard_normal.finite_upper_bound == 5
+        assert standard_normal.finite_upper_bound() == 5
 
     def test_finite_upper_bound_finite(self):
         var = module_under_test.ContinuousVariable(distribution=stats.uniform(0, 1))
-        assert var.finite_upper_bound == 1
+        assert var.finite_upper_bound() == 1
 
     def test_finite_upper_bound_infinite(
         self, standard_normal: module_under_test.ContinuousVariable
     ):
-        standard_normal.infinite_bound_probability_tolerance = 2.5e-2
-        assert np.isclose(standard_normal.finite_upper_bound, 1.95996)
+        assert np.isclose(standard_normal.finite_upper_bound(2.5e-2), 1.95996)
 
 
 class TestDiscreteVariable:
@@ -168,12 +168,12 @@ class TestDiscreteVariable:
     def test_get_finite_lower_bound(
         self, discrete_bernoulli: module_under_test.DiscreteVariable
     ):
-        assert discrete_bernoulli.finite_lower_bound == 42
+        assert discrete_bernoulli.finite_lower_bound() == 42
 
     def test_get_finite_upper_bound(
         self, discrete_bernoulli: module_under_test.DiscreteVariable
     ):
-        assert discrete_bernoulli.finite_upper_bound == 666
+        assert discrete_bernoulli.finite_upper_bound() == 666
 
 
 class TestParameterSpace:
@@ -196,7 +196,6 @@ class TestParameterSpace:
         self, design_space: experiment_design.variable.space.ParameterSpace
     ):
         assert design_space.dimensions == 2
-        assert len(design_space) == 2
 
     def test_design_space_lower_bound(
         self, design_space: experiment_design.variable.space.ParameterSpace

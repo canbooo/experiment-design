@@ -1,8 +1,8 @@
 from dataclasses import dataclass
-from typing import Any, Callable, Protocol, Sequence
+from typing import Any, Callable, Protocol
 
 import numpy as np
-from scipy.stats import randint, rv_continuous, rv_discrete, uniform
+from scipy.stats import rv_continuous, rv_discrete, uniform
 
 # Following is ugly, but it is scipy's fault for not exposing rv_frozen
 # noinspection PyProtectedMember
@@ -38,19 +38,29 @@ def _change_field_representation(
 def _create_distribution_representation(distribution: rv_frozen) -> str:
     """Create a readable representation of rv_frozen instances"""
     args = ", ".join([str(a) for a in distribution.args])
-    kwargs = ", ".join([f"{k}={v}" for k, v in distribution.kwds])
+    kwargs = ", ".join([f"{k}={v}" for k, v in distribution.kwds.items()])
     params = [a for a in [args, kwargs] if a]
     return f"{distribution.dist.name}({', '.join(params)})"
 
 
 @dataclass
 class ContinuousVariable:
-    """A variable with continuous distribution"""
+    """
+    A variable with continuous distribution
+
+    :param distribution: rv_frozen instance representing the distribution. If None (default), it will be set to uniform
+        between the passed lower_bound and upper_bound
+    :param lower_bound: Lower bound for the variable. If None (default), left support boundary of the distribution will
+        be used in case the distribution is bounded. Otherwise, distribution.ppf(infinite_bound_probability_tolerance)
+        will be used.
+    :param upper_bound: Upper bound for the variable. If None (default), right support boundary of the distribution will
+        be used in case the distribution is bounded. Otherwise, distribution.ppf(1 - infinite_bound_probability_tolerance)
+        will be used.
+    """
 
     distribution: rv_frozen | None = None
     lower_bound: float | None = None
     upper_bound: float | None = None
-    infinite_bound_probability_tolerance: float = 1e-6
 
     def __post_init__(self) -> None:
         if self.distribution is None and None in [self.lower_bound, self.upper_bound]:
@@ -71,35 +81,49 @@ class ContinuousVariable:
             raise ValueError("Only frozen continuous distributions are supported.")
 
     def value_of(self, probability: float | np.ndarray) -> float | np.ndarray:
-        """Given a probability or an array of probabilities return the corresponding value(s) using the inverse cdf."""
+        """Given a probability or an array of probabilities return the corresponding value(s) using the inverse |CDF|."""
         values = self.distribution.ppf(probability)
         if self.upper_bound is not None or self.lower_bound is not None:
             return np.clip(values, self.lower_bound, self.upper_bound)
         return values
 
     def cdf_of(self, value: float | np.ndarray) -> float | np.ndarray:
-        """Given a value or an array of values return the probability using the cdf."""
+        """Given a value or an array of values return the probability using the |CDF|."""
         return self.distribution.cdf(value)
 
-    @property
-    def finite_lower_bound(self) -> float:
-        """Provide a finite lower bound of the variable even if it was not provided by the user."""
+    def finite_lower_bound(
+        self, infinite_bound_probability_tolerance: float = 1e-6
+    ) -> float:
+        """
+        Provide a finite lower bound of the variable even if it was not provided by the user.
+
+        :param infinite_bound_probability_tolerance: If the variable is unbounded and no explicit lower_bound was
+            passed, this will be used to extract finite bounds as described in lower_bound and upper_bound descriptions.
+            (Default: 1e-6)
+        """
         if self.lower_bound is not None:
             return self.lower_bound
         value = self.value_of(0.0)
         if np.isfinite(value):
             return value
-        return self.value_of(self.infinite_bound_probability_tolerance)
+        return self.value_of(infinite_bound_probability_tolerance)
 
-    @property
-    def finite_upper_bound(self) -> float:
-        """Provide a finite upper bound of the variable even if it was not provided by the user."""
+    def finite_upper_bound(
+        self, infinite_bound_probability_tolerance: float = 1e-6
+    ) -> float:
+        """Provide a finite upper bound of the variable even if it was not provided by the user.
+
+        :param infinite_bound_probability_tolerance: If the variable is unbounded and no explicit lower_bound was
+            passed, this will be used to extract finite bounds as described in lower_bound and upper_bound descriptions.
+            (Default: 1e-6)
+
+        """
         if self.upper_bound is not None:
             return self.upper_bound
         value = self.value_of(1.0)
         if np.isfinite(value):
             return value
-        return self.value_of(1 - self.infinite_bound_probability_tolerance)
+        return self.value_of(1 - infinite_bound_probability_tolerance)
 
     def __repr__(self) -> str:
         distribution_representation = _create_distribution_representation(
@@ -112,12 +136,20 @@ class ContinuousVariable:
 
 @dataclass
 class DiscreteVariable:
-    """A variable with discrete distribution"""
+    """
+    A variable with discrete distribution
+
+    :param distribution: rv_frozen instance representing the distribution. If None (default), it will be set to uniform between
+        the passed lower_bound and upper_bound
+    :param value_mapper: Given an integer, i.e. an ordinal encoding, this is expected to return the corresponding
+        discrete value of the underlying set of possible values. (Default: lambda x: x)
+    :param inverse_value_mapper: Given a discrete value, this is expected to return the corresponding integer value,
+        i.e. ordinal encoding. (Default: lambda x: x)
+    """
 
     distribution: rv_frozen
     value_mapper: Callable[[float], float | int] = lambda x: x
     inverse_value_mapper: Callable[[float, int], float] = lambda x: x
-    infinite_bound_probability_tolerance: float = 1e-6
 
     def __post_init__(self) -> None:
         if not _is_frozen_discrete(self.distribution):
@@ -134,21 +166,35 @@ class DiscreteVariable:
         """Given a value or an array of values return the probability using the cdf."""
         return self.distribution.cdf(self.inverse_value_mapper(values))
 
-    @property
-    def finite_lower_bound(self) -> float:
-        """Provide a finite lower bound of the variable even if it was not provided by the user."""
+    def finite_lower_bound(
+        self, infinite_bound_probability_tolerance: float = 1e-6
+    ) -> float:
+        """
+        Provide a finite lower bound of the variable even if it was not provided by the user.
+
+        :param infinite_bound_probability_tolerance: If the variable is unbounded and no explicit lower_bound was
+            passed, this will be used to extract finite bounds as described in lower_bound and upper_bound descriptions.
+            (Default: 1e-6)
+        """
         support = self.distribution.support()
         if np.isfinite(support[0]):
             return self.value_mapper(support[0])
-        return self.value_of(self.infinite_bound_probability_tolerance)
+        return self.value_of(infinite_bound_probability_tolerance)
 
-    @property
-    def finite_upper_bound(self) -> float:
-        """Provide a finite upper bound of the variable even if it was not provided by the user."""
+    def finite_upper_bound(
+        self, infinite_bound_probability_tolerance: float = 1e-6
+    ) -> float:
+        """
+        Provide a finite upper bound of the variable even if it was not provided by the user.
+
+        :param infinite_bound_probability_tolerance: If the variable is unbounded and no explicit lower_bound was
+            passed, this will be used to extract finite bounds as described in lower_bound and upper_bound descriptions.
+            (Default: 1e-6)
+        """
         support = self.distribution.support()
         if np.isfinite(support[-1]):
             return self.value_mapper(support[1])
-        return self.value_of(1 - self.infinite_bound_probability_tolerance)
+        return self.value_of(1 - infinite_bound_probability_tolerance)
 
     def __repr__(self) -> str:
         distribution_representation = _create_distribution_representation(
@@ -159,50 +205,9 @@ class DiscreteVariable:
         )
 
 
-def create_discrete_uniform_variables(
-    discrete_sets: list[list[int | float | str]],
-) -> list[DiscreteVariable]:
-    """Given sets of possible values, create corresponding discrete variables with equal probability of each value."""
-    variables = []
-    for discrete_set in discrete_sets:
-        n_values = len(discrete_set)
-        if n_values < 2:
-            raise ValueError("At least two values are required for discrete variables")
-        # In the following, it is OK and even advantageous to have a mutable
-        # default argument as a very rare occasion. Therefore, we disable inspection.
-        # noinspection PyDefaultArgument
-        variables.append(
-            DiscreteVariable(
-                distribution=randint(0, n_values),
-                # Don't forget to bind the discrete_set below either by
-                # defining a kwarg as done here, or by generating in another
-                # scope, e.g. function. Otherwise, the last value of discrete_set
-                # i.e. the last entry of discrete_sets will be used for all converters
-                # Check https://stackoverflow.com/questions/19837486/lambda-in-a-loop
-                # for a description as this is expected python behaviour.
-                value_mapper=lambda x, values=sorted(discrete_set): values[int(x)],
-                inverse_value_mapper=lambda x,
-                values=sorted(discrete_set): values.index(x),
-            )
-        )
-    return variables
-
-
-def create_continuous_uniform_variables(
-    continuous_lower_bounds: Sequence[float], continuous_upper_bounds: Sequence[float]
-) -> list[ContinuousVariable]:
-    """Given lower and upper bounds, create uniform variables."""
-    if len(continuous_lower_bounds) != len(continuous_upper_bounds):
-        raise ValueError(
-            "Number of lower bounds has to be equal to the number of upper bounds"
-        )
-    variables = []
-    for lower, upper in zip(continuous_lower_bounds, continuous_upper_bounds):
-        variables.append(ContinuousVariable(lower_bound=lower, upper_bound=upper))
-    return variables
-
-
 class Variable(Protocol):
+    """A protocol to represent the expected methods of valid Variable objects"""
+
     @property
     def distribution(self) -> rv_frozen:
         """Distribution of the variable"""
@@ -213,19 +218,38 @@ class Variable(Protocol):
     def cdf_of(self, value: float | np.ndarray) -> float | np.ndarray:
         """Given a value or an array of values return the probability using the cdf."""
 
-    @property
-    def finite_lower_bound(self) -> float:
-        """Provide a finite upper bound of the variable even if it was not provided by the user."""
+    def finite_lower_bound(
+        self, infinite_bound_probability_tolerance: float = 1e-6
+    ) -> float:
+        """
+        Provide a finite upper bound of the variable even if it was not provided by the user.
 
-    @property
-    def finite_upper_bound(self) -> float:
-        """Provide a finite upper bound of the variable even if it was not provided by the user."""
+        :param infinite_bound_probability_tolerance: If the variable is unbounded and no explicit lower_bound was
+            passed, this will be used to extract finite bounds as described in lower_bound and upper_bound descriptions.
+            (Default: 1e-6)
+        """
+
+    def finite_upper_bound(
+        self, infinite_bound_probability_tolerance: float = 1e-6
+    ) -> float:
+        """
+        Provide a finite upper bound of the variable even if it was not provided by the user.
+
+        :param infinite_bound_probability_tolerance: If the variable is unbounded and no explicit lower_bound was
+            passed, this will be used to extract finite bounds as described in lower_bound and upper_bound descriptions.
+            (Default: 1e-6)
+        """
 
 
 def create_variables_from_distributions(
     distributions: list[rv_frozen],
 ) -> list[ContinuousVariable | DiscreteVariable]:
-    """Given a list of distributions, create the corresponding continuous or discrete variables."""
+    """
+    Given a list of distributions, create the corresponding continuous or discrete variables.
+
+    :param distributions: Frozen scipy distributions each representing a marginal variable
+    :return: List of variables according to the passed distributions
+    """
     variables = []
     for dist in distributions:
         if _is_frozen_discrete(dist):

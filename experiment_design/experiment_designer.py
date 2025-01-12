@@ -36,17 +36,17 @@ class ExperimentDesigner(abc.ABC):
         initial_optimization_proportion: float = DEFAULT_INITIAL_OPTIMIZATION_PROPORTION,
     ) -> np.ndarray:
         """
-        Create or extend a design of experiments (DoE).
+        Create or extend a |DoE| .
 
         :param space: Determines the dimensions of the resulting sample.
         :param sample_size: the number of points to be created.
-        :param old_sample: Old DoE matrix with shape (len(variables), old_sample_size). If provided,
-            it will be extended with sample_size new points, otherwise a new DoE will be created.
+        :param old_sample: Old |DoE| matrix with shape (old_sample_size, space.dimensions). If provided,
+            it will be extended with sample_size new points, otherwise a new |DoE| will be created.
             In both cases, only the new points will be returned.
-        :param steps: Number of DoEs to be created to choose the best from.
+        :param steps: Number of search steps for improving the |DoE| quality wrt. the self.scorer_factory.
         :param initial_optimization_proportion:  Proportion of steps that will be used to create an
-            initial DoE with a good score. Rest of the steps will be used to optimize the candidate points.
-        :return: DoE matrix with shape (len(variables), samples_size)
+            initial |DoE| with a good score. Rest of the steps will be used to optimize the candidate points.
+        :return: |DoE| matrix with shape (sample_size, space.dimensions)
         """
         scorer = self.scorer_factory(space, sample_size, old_sample=old_sample)
         initial_steps, final_steps = calculate_optimization_step_numbers(
@@ -102,12 +102,14 @@ def calculate_optimization_step_numbers(
         sample_size.
     :param proportion: Proportion of initial to total steps.
     :return: initial and final optimization steps (minimum 1 for each stage).
+
+    :meta private:
     """
     if steps is None:
         if sample_size <= 128:
-            steps = 20000
+            steps = 20_000
         else:
-            steps = 2000
+            steps = 2_000
     init_steps = max(1, round(proportion * steps))
     opt_steps = max(0, steps - init_steps)
     return init_steps, opt_steps

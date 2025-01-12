@@ -19,37 +19,54 @@ class OrthogonalSamplingDesigner(ExperimentDesigner):
     """
     Create or extend an orthogonal sampling design. Orthogonal sampling design partitions the design space into
     bins of equal marginal probability and places samples such that each bin is only filled once for each dimension.
-    If all variables are uniform, orthogonal sampling becomes a Latin hypercube sampling.
+    If all variables are uniform, orthogonal sampling becomes an |LHS|.
 
-    :param inter_bin_randomness: Controls the randomness of placed points between the bin bounds. Specifically, 0. means that
-        the points are placed at the center of each bin, whereas 1. leads to a random point placement within the bounds.
+    :param inter_bin_randomness: Controls the randomness of placed points between the bin bounds. Specifically, 0 means
+        the points are placed at the center of each bin, whereas 1 leads to a random point placement within the bounds.
         Any other fractions leads to a random placement within that fraction of the bin bounds in each dimension.
-
     :param non_occupied_bins: Only relevant for extending the design, i.e. if old points are provided, and if the constraint
         regarding the number of occupation of each bin has to be violated. True means that each bin is occupied at least
         once for each dimension, although some bins might be occupied more often. Otherwise, each bin is occupied once
         or less often, leading to empty bins in some cases.
     :param scorer_factory: A factory that creates scorers for the given variables, sample_size and in the cast of an
         extension, old sampling points. If not passed, a default one will be created, that evaluates the maximum
-        correlation error and minimum pairwise distance. See `experiment_design.scorers.create_default_scorer_factory`
+        correlation error and minimum pairwise distance. See
+        `experiment_design.scorers.create_default_scorer_factory <#experiment_design.scorers.create_default_scorer_factory>`_
         for more details.
 
 
-    M. D. McKay, W. J. Conover and R. J. Beckmann (1979). “A comparison of three methods for selecting values of input
-    variables in the analysis of output from a computer code”
 
-    A. B. Owen (1992). “Orthogonal arrays for computer experiments, integration and visualization”
+    References
+    ----------
+    M.D. McKay, W.J. Conover and R.J. Beckmann (1979). “`A comparison of three methods for selecting values of input
+    variables in the analysis of output from a computer code
+    <https://www.researchgate.net/publication/235709905_A_Comparison_of_Three_Methods_for_Selecting_Vales_of_Input_Variables_in_the_Analysis_of_Output_From_a_Computer_Code>`_”
 
-    C. Bogoclu (2022). "Local Latin Hypercube Refinement for Uncertainty Quantification and Optimization" Chapters 4.3.1
-    and 5
-    https://hss-opus.ub.ruhr-uni-bochum.de/opus4/frontdoor/deliver/index/docId/9143/file/diss.pdf
+    A.B. Owen (1992). “`Orthogonal arrays for computer experiments, integration and visualization
+    <https://www3.stat.sinica.edu.tw/statistica/oldpdf/A18n17.pdf>`_”
 
+    C. Bogoclu (2022). "`Local Latin Hypercube Refinement for Uncertainty Quantification and Optimization
+    <https://hss-opus.ub.ruhr-uni-bochum.de/opus4/frontdoor/deliver/index/docId/9143/file/diss.pdf>`_"
+    Chapters 4.3.1 and 5
+
+
+    Examples
+    --------
+    >>> from experiment_design import create_continuous_uniform_space, OrthogonalSamplingDesigner
+    >>> space = create_continuous_uniform_space([-2., -2.], [2., 2.])
+    >>> designer = OrthogonalSamplingDesigner()
+    >>> doe1 = designer.design(space, sample_size=20)
+    >>> doe1.shape
+    (20, 2)
+    >>> doe2 = designer.design(space, sample_size=4, old_sample=doe1)
+    >>> doe2.shape
+    (4, 2)
 
     """
 
     def __init__(
         self,
-        inter_bin_randomness: float = 1.0,
+        inter_bin_randomness: float = 0.8,
         non_occupied_bins: bool = False,
         scorer_factory: ScorerFactory | None = None,
     ) -> None:
@@ -68,7 +85,7 @@ class OrthogonalSamplingDesigner(ExperimentDesigner):
         initial_steps: int,
         final_steps: int,
     ) -> np.ndarray:
-        if initial_steps + final_steps == 1:
+        if initial_steps + final_steps <= 1:
             return create_orthogonal_design(
                 space=space,
                 sample_size=sample_size,
@@ -114,7 +131,7 @@ class OrthogonalSamplingDesigner(ExperimentDesigner):
             empty_size_check=self.empty_size_check,
         )
 
-        if initial_steps + final_steps == 1:
+        if initial_steps + final_steps <= 1:
             return _create_candidates_from(
                 empty, space, sample_size, self.inter_bin_randomness
             )
@@ -142,13 +159,17 @@ def create_orthogonal_design(
     sample_size: int,
     inter_bin_randomness: float = 1.0,
 ) -> np.ndarray:
-    """Create an orthogonal design without any optimization."""
+    """
+    Create an orthogonal design without any optimization.
+
+    :meta private:
+    """
     # Sometimes, we may randomly generate probabilities with
     # singular correlation matrices. Try 3 times to avoid issue until we give up
     error_text = ""
     for k in range(3):
         probabilities = create_lhd_probabilities(
-            len(space), sample_size, inter_bin_randomness=inter_bin_randomness
+            space.dimensions, sample_size, inter_bin_randomness=inter_bin_randomness
         )
         doe = space.value_of(probabilities)
         try:
@@ -166,7 +187,10 @@ def create_lhd_probabilities(
     sample_size: int,
     inter_bin_randomness: float = 1.0,
 ) -> np.ndarray:
-    """Create probabilities for a Latin hypercube design."""
+    """Create probabilities for a Latin hypercube design.
+
+    :meta private:
+    """
     if not 0.0 <= inter_bin_randomness <= 1.0:
         raise ValueError(
             f"inter_bin_randomness has to be between 0 and 1, got {inter_bin_randomness}"
