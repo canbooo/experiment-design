@@ -13,7 +13,7 @@ of code. Additionally, it allows you to extend the designs of experiments...
     <img src="docs/source/images/lhs_extension_local.gif" alt="Image: Local Latin hypercube extension" width="200">
 </p>
 
-... create and optimize orthogonal sampling designs with any[^1] distribution
+... create and optimize orthogonal sampling designs with any distribution supported by `scipy.stats`
 
 <img src="docs/source/images/os_extension_by_doubling.gif" alt="Image: Orthogonal sampling creation and extension with any distribution" width="200">
 
@@ -25,8 +25,6 @@ There is even more! See the [documentation](https://experiment-design.readthedoc
 especially the section "[Why should you use `experiment-design`?](https://experiment-design.readthedocs.io/en/latest/orthogonal_sampling.html#why-should-you-use-experiment-design)"
 
 Also, see [demos](./demos) to understand how the images above were created.
-
-[^1]: As long as it is supported by `scipy.stats`
 
 ## Install
 `experiment-design` can be installed easily from PyPI using
