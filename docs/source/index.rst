@@ -18,7 +18,6 @@ cases and seeks to provide a space-filling design of experiments with a small co
 
 
 
-
 .. toctree::
    :maxdepth: 2
    :caption: Contents:
@@ -26,3 +25,4 @@ cases and seeks to provide a space-filling design of experiments with a small co
    quickstart
    orthogonal_sampling
    api_reference
+   citing
