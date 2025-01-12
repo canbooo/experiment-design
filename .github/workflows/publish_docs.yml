@@ -31,13 +31,9 @@ jobs:
         shell: bash
       - name: Execute script to build our documentation and update pages
         run: |
-          echo venvs
-          ls /home/runner/.cache/pypoetry/virtualenvs/*/*
-          echo dist-pack
-          ls /usr/lib/python3/dist-packages
           cd docs
-          make clean
-          make html
+          poetry shell make clean
+          poetry shell make html
         shell: bash
       - name: Check ls
         run: |
