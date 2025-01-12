@@ -39,19 +39,14 @@ jobs:
           make clean
           make html
         shell: bash
-      - name: Check ls
-        run: |
-          ls docs
-          ls docs/build
-          ls docs/build/html
-        shell: bash
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
           path: 'docs/build/html'
 
-  # Single deploy job since we're just deploying
   deploy:
+    # following is failing, so I give up and just use rtd for now
+    # If they decide to show ads on docs, we will try harder to migrate
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
