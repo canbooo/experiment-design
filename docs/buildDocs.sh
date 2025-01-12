@@ -1,5 +1,3 @@
-#!/bin/bash
-set -x
 ################################################################################
 # Important: This file is copied from https://github.com/maltfield/rtd-github-pages
 # following the blog post https://tech.michaelaltfield.net/2020/07/18/sphinx-rtd-github-pages-1/
