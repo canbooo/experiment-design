@@ -1,6 +1,6 @@
 ![PyPI - Version](https://img.shields.io/pypi/v/experiment-design)
 [![tests](https://github.com/canbooo/experimental-design/actions/workflows/tests.yml/badge.svg)](https://github.com/canbooo/experimental-design/actions/workflows/tests.yml)
-
+![coverage-badge](https://img.shields.io/endpoint?url=https://gist.githubusercontent.com/canbooo/6e8333ea5cf30b2e8c83d55eee51525b/raw/coverage_token.json)
 # `experiment-design`: Tools to create and extend experiment plans
 
 Documentation is under construction. You can install using
