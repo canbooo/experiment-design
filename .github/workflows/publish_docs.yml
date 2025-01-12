@@ -26,6 +26,7 @@ jobs:
       - name: Install dependencies
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        # should probably use github action to setup poetry below
         run: |
           pip install poetry
           python -m venv experiment-design-env
