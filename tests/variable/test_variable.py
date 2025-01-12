@@ -3,7 +3,6 @@ import pytest
 from scipy import stats
 
 import experiment_design.variable as module_under_test
-import experiment_design.variable.space
 
 
 @pytest.fixture
@@ -17,19 +16,6 @@ def discrete_bernoulli() -> module_under_test.DiscreteVariable:
 @pytest.fixture
 def standard_normal() -> module_under_test.ContinuousVariable:
     return module_under_test.ContinuousVariable(distribution=stats.norm(0, 1))
-
-
-@pytest.fixture(
-    params=(
-        [stats.uniform(-2, 4) for _ in range(2)],
-        [stats.uniform(-2, 4), stats.bernoulli(0.8)],
-        [stats.bernoulli(0.8) for _ in range(2)],
-    ),
-    ids=("Continuous", "Mixed", "Discrete"),
-)
-def design_space(request) -> experiment_design.variable.space.ParameterSpace:
-    variables = module_under_test.create_variables_from_distributions(request.param)
-    return experiment_design.variable.space.ParameterSpace(variables)
 
 
 def test_is_frozen_discrete():
@@ -47,9 +33,7 @@ def test_is_frozen_continuous():
 
 
 def test_create_continuous_discrete_uniform_variables():
-    space = experiment_design.variable.space.create_discrete_uniform_space(
-        [[1, 2], [3, 4, 5], [9, 8]]
-    )
+    space = module_under_test.create_discrete_uniform_space([[1, 2], [3, 4, 5], [9, 8]])
     probabilities = np.repeat(np.array([[1e-6, 0.6, 1]]).T, 3, 1)
 
     expected = np.array([[1, 3, 8], [2, 4, 9], [2, 5, 9]])
@@ -59,7 +43,7 @@ def test_create_continuous_discrete_uniform_variables():
 
 
 def test_create_continuous_uniform_variables():
-    space = experiment_design.variable.space.create_continuous_uniform_space(
+    space = module_under_test.create_continuous_uniform_space(
         [1, 42, 665], [3, 52, 667]
     )
     probabilities = np.repeat(np.array([[1e-6, 0.5, 1]]).T, 3, 1)
@@ -174,53 +158,3 @@ class TestDiscreteVariable:
         self, discrete_bernoulli: module_under_test.DiscreteVariable
     ):
         assert discrete_bernoulli.finite_upper_bound() == 666
-
-
-class TestParameterSpace:
-    def test_value_of(
-        self, design_space: experiment_design.variable.space.ParameterSpace
-    ):
-        probabilities = np.array([[0.1, 0.1], [0.5, 0.6], [0.9, 0.8]])
-        if isinstance(design_space.variables[0], module_under_test.DiscreteVariable):
-            # Both are discrete
-            expected = np.array([[0, 0], [1, 1], [1, 1]])
-        elif isinstance(design_space.variables[1], module_under_test.DiscreteVariable):
-            # Mixed case
-            expected = np.array([[-1.6, 0], [0, 1], [1.6, 1]])
-        else:
-            # Both are continuous
-            expected = np.array([[-1.6, -1.6], [0, 0.4], [1.6, 1.2]])
-        assert np.all(np.isclose(design_space.value_of(probabilities), expected))
-
-    def test_design_space_size_getters(
-        self, design_space: experiment_design.variable.space.ParameterSpace
-    ):
-        assert design_space.dimensions == 2
-
-    def test_design_space_lower_bound(
-        self, design_space: experiment_design.variable.space.ParameterSpace
-    ):
-        if isinstance(design_space.variables[0], module_under_test.DiscreteVariable):
-            # Both are discrete
-            expected = np.array([0, 0])
-        elif isinstance(design_space.variables[1], module_under_test.DiscreteVariable):
-            # Mixed case
-            expected = np.array([-2, 0])
-        else:
-            # Both are continuous
-            expected = np.array([-2, -2])
-        assert all(design_space.lower_bound == expected)
-
-    def test_design_space_upper_bound(
-        self, design_space: experiment_design.variable.space.ParameterSpace
-    ):
-        if isinstance(design_space.variables[0], module_under_test.DiscreteVariable):
-            # Both are discrete
-            expected = np.array([1, 1])
-        elif isinstance(design_space.variables[1], module_under_test.DiscreteVariable):
-            # Mixed case
-            expected = np.array([2, 1])
-        else:
-            # Both are continuous
-            expected = np.array([2, 2])
-        assert np.all(design_space.upper_bound == expected)
