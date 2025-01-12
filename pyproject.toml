@@ -6,6 +6,9 @@ authors = ["Can Bogoclu"]
 license = "MIT"
 readme = "README.md"
 packages = [{include = "experiment_design"}]
+homepage = "https://experiment-design.readthedocs.io"
+repository = "https://github.com/canbooo/experiment-design"
+documentation = "https://experiment-design.readthedocs.io"
 
 [tool.poetry.dependencies]
 python = "^3.10"

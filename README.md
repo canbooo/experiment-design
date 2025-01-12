@@ -3,6 +3,8 @@
 [![tests](https://github.com/canbooo/experimental-design/actions/workflows/tests.yml/badge.svg)](https://github.com/canbooo/experimental-design/actions/workflows/tests.yml)
 [![codecov](https://codecov.io/github/canbooo/experiment-design/graph/badge.svg?token=S5XHYYL1U9)](https://codecov.io/github/canbooo/experiment-design)
 ![Code style ruff](https://img.shields.io/badge/style-ruff-41B5BE?style=flat)
+[![DOI](https://zenodo.org/badge/756928984.svg)](https://doi.org/10.5281/zenodo.14635604)
+
 # `experiment-design`: Tools to create and extend experiment plans
 
 `experiment-design` allows you to create high quality designs of experiment with just a few lines
@@ -33,8 +35,8 @@ Also, see [demos](./demos) to understand how the images above were created.
 
 ## Cite
 
-You can use the zenodo DOI to cite the code, but I would appreciate you citing either of the following
-publications to cite the methods:
+You can use the zenodo DOI to cite the code, but if this repository helps you with your research,
+please consider citing either of the following:
 
 - Journal paper about locally extending experiment designs for adaptive sampling:
 ```latex
