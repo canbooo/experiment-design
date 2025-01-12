@@ -7,10 +7,11 @@
 
 `experiment-design` allows you to create high quality designs of experiment with just a few lines
 of code. Additionally, it allows you to extend the designs of experiments...
-
-<img src="docs/source/images/lhs_extension_by_doubling.gif" alt="Image: Latin hypercube sampling extension by doubling" width="200">
-<img src="docs/source/images/lhs_extension_by_constant.gif" alt="Image: Latin hypercube sampling extension using one sample at a time" width="200">
-<img src="docs/source/images/lhs_extension_local.gif" alt="Image: Local Latin hypercube extension" width="200">
+<p float="left">
+    <img src="docs/source/images/lhs_extension_by_doubling.gif" alt="Image: Latin hypercube sampling extension by doubling" width="200">
+    <img src="docs/source/images/lhs_extension_by_constant.gif" alt="Image: Latin hypercube sampling extension using one sample at a time" width="200">
+    <img src="docs/source/images/lhs_extension_local.gif" alt="Image: Local Latin hypercube extension" width="200">
+</p>
 
 ... create and optimize orthogonal sampling designs with any[^1] distribution
 
@@ -21,7 +22,7 @@ of code. Additionally, it allows you to extend the designs of experiments...
 <img src="docs/source/images/lhs_correlation.gif" alt="Image: Latin hypercube sampling with correlated variables" width="200">
 
 There is even more! See the [documentation](https://experiment-design.readthedocs.io) for more details and
-especially the section ["Why should you use `experiment-design`"](https://experiment-design.readthedocs.io/en/latest/orthogonal_sampling.html#why-should-you-use-experiment-design)
+especially the section "[Why should you use `experiment-design`?](https://experiment-design.readthedocs.io/en/latest/orthogonal_sampling.html#why-should-you-use-experiment-design)"
 
 Also, see [demos](./demos) to understand how the images above were created.
 
