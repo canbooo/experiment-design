@@ -29,10 +29,6 @@ jobs:
         run: |
           poetry install --with dev --no-interaction
       - uses: MishaKav/pytest-coverage-comment@main
-        with:
-          pytest-coverage-path: ./data/pytest-coverage.txt
-          junitxml-path: ./data/pytest_coverage.xml
-
       - name: Check the output coverage
         run: |
           echo "Coverage Percentage - ${{ steps.coverageComment.outputs.coverage }}"
