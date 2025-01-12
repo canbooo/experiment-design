@@ -20,24 +20,25 @@ jobs:
 
   build:
     runs-on: ubuntu-latest
-    container: debian:bullseye-slim
-
     steps:
 
-      - name: Prereqs
+      - name: Install dependencies
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           apt-get update
           apt-get install -y git
           git clone "https://token:${GITHUB_TOKEN}@github.com/${GITHUB_REPOSITORY}.git" .
-          chmod +x docs/buildDocs.sh
+          poetry install --with docs
         shell: bash
 
       - name: Execute script to build our documentation and update pages
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: "docs/buildDocs.sh"
+        run: |
+          cd docs
+          make clean
+          make html
         shell: bash
       - name: Check ls
         run: |
@@ -45,8 +46,6 @@ jobs:
           ls docs/build
           ls docs/build/html
         shell: bash
-
-
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
