@@ -39,6 +39,13 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: "docs/buildDocs.sh"
         shell: bash
+      - name: Check ls
+        run: |
+          ls docs
+          ls docs/build
+          ls docs/build/html
+        shell: bash
+
 
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
