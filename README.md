@@ -1,6 +1,7 @@
 ![PyPI - Python Version](https://img.shields.io/pypi/pyversions/experiment-design)
 ![PyPI - Version](https://img.shields.io/pypi/v/experiment-design)
 [![tests](https://github.com/canbooo/experimental-design/actions/workflows/tests.yml/badge.svg)](https://github.com/canbooo/experimental-design/actions/workflows/tests.yml)
+[![codecov](https://codecov.io/github/canbooo/experiment-design/graph/badge.svg?token=S5XHYYL1U9)](https://codecov.io/github/canbooo/experiment-design)
 ![Code style ruff](https://img.shields.io/badge/style-ruff-41B5BE?style=flat)
 # `experiment-design`: Tools to create and extend experiment plans
 
