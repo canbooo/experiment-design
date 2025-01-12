@@ -109,7 +109,7 @@ deactivate the optimization by setting.. code:`steps=1` as we did before.
 .. _quality metrics:
 
 We can look at two metrics to evaluate the quality of the |DoE|; the minimum pairwise distance to evaluate its
-space-filling properties as well as the correlation coefficient :math:`\rho` between the variables. We are using
+space-filling properties as well as the correlation coefficient :math:`|\Delta\rho|` between the variables. We are using
 `scipy.spatial.distance.pdist(doe).min()` for the pairwise distance metric and
 `np.abs(np.corrcoef(doe, rowvar=False)[0, 1])` for the correlation error. Results are given below.
 
@@ -119,7 +119,7 @@ space-filling properties as well as the correlation coefficient :math:`\rho` bet
 
     * - |DoE|
       - Min. distance
-      - :math:`\rho`
+      - :math:`|\Delta\rho|`
     * - doe
       - 0.18
       - 0.00
@@ -387,7 +387,7 @@ As we did :ref:`before <quality metrics>`, let us compute the correlation error 
 
     * - |DoE|
       - Min. distance
-      - :math:`\rho`
+      - :math:`|\Delta\rho|`
     * - doe_maximin
       - 0.05
       - 0.17
@@ -453,7 +453,7 @@ space. Therefore, using `pyDOE` for non-uniform use cases may lead to worse metr
 
     * - |DoE|
       - Min. distance
-      - :math:`\rho`
+      - :math:`|\delta\rho|`
     * - doe_maximin
       - 0.05
       - 0.18
