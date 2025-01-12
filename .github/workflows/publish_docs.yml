@@ -32,7 +32,7 @@ jobs:
       - name: Execute script to build our documentation and update pages
         run: |
           echo venvs
-          ls /home/runner/.cache/pypoetry/virtualenv/*/*
+          ls /home/runner/.cache/pypoetry/virtualenvs/*/*
           echo dist-pack
           ls /usr/lib/python3/dist-packages
           cd docs
