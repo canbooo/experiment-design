@@ -30,16 +30,12 @@ jobs:
           poetry install --with dev --no-interaction
       - name: Build coverage file
         run: |
-          poetry run pytest --cov-report=xml --cov=experiment_design tests/
+          poetry run pytest --cov-report=xml --cov=experiment_design --junitxml=junit.xml -o junit_family=legacy tests/
       - name: Upload coverage reports to Codecov
         uses: codecov/codecov-action@v5
         with:
-          files: ./pytest.xml
           token: ${{ secrets.CODECOV_TOKEN }}
           slug: canbooo/experiment-design
-      - name: Build coverage report
-        run: |
-          poetry run pytest --cov=experiment_design --junitxml=junit.xml -o junit_family=legacy tests/
       - name: Upload test results to Codecov
         if: ${{ !cancelled() }}
         uses: codecov/test-results-action@v1

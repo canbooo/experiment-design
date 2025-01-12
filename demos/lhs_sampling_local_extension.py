@@ -82,6 +82,6 @@ if __name__ == "__main__":
         fig, ax = create_iterative_plot(does, step_grids=grids)
         ax.set_title(title)
         plt.axis("off")
-        plt.savefig(f"../media/lhs_local_extension_{i_step}.png", bbox_inches="tight")
+        plt.savefig(f"lhs_local_extension_{i_step}.png", bbox_inches="tight")
 
     plt.show()
