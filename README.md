@@ -35,8 +35,8 @@ Also, see [demos](./demos) to understand how the images above were created.
 
 ## Cite
 
-You can use the zenodo DOI to cite the code, but I would appreciate you citing either of the following
-publications to cite the methods if this repository helps you with your research:
+You can use the zenodo DOI to cite the code, but if this repository helps you with your research,
+please consider citing either of the following:
 
 - Journal paper about locally extending experiment designs for adaptive sampling:
 ```latex

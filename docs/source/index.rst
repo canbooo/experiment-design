@@ -5,6 +5,10 @@ experiment-design
 .. |DoE| replace:: :abbr:`DoE (Design of Experiments)`
 .. |LHS| replace:: :abbr:`LHS (Latin Hypercube Sampling)`
 
+.. image:: https://zenodo.org/badge/756928984.svg
+  :target: https://doi.org/10.5281/zenodo.14635604
+
+
 experiment-design allows anyone to easily create and extend randomized experiment designs. Currently, it supports
 creating designs using
 

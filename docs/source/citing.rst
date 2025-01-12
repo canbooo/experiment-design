@@ -1,8 +1,11 @@
 Citing
 ''''''''''
 
-Citations are very welcome. You can find the Zenodo DOI of the code on `github <https://github.com/canbooo/experiment-design>`_,
-but if you want to cite the methods, please use either of the following:
+.. image:: https://zenodo.org/badge/756928984.svg
+  :target: https://doi.org/10.5281/zenodo.14635604
+
+Citations are very welcome. You can find the Zenodo DOI above, but if you want to cite the methods or
+if this library has helped you with your research, please consider citing either of the following:
 
 
 - Journal paper about locally extending experiment designs for adaptive sampling:
@@ -22,6 +25,7 @@ but if you want to cite the methods, please use either of the following:
 - PhD thesis:
 
 .. code:: latex
+
     @phdthesis{Bogoclu2022,
       title       = {Local {L}atin hypercube refinement for uncertainty quantification and optimization: {A}ccelerating the surrogate-based solutions using adaptive sampling},
       author      = {Bogoclu, Can},
