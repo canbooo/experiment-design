@@ -59,22 +59,3 @@ jobs:
           poetry config repositories.publish https://test.pypi.org/legacy/
           poetry publish -p ${{ secrets.TESTPYPI_TOKEN }} -u __token__ -r publish --build
         shell: bash
-  build_docs_job:
-    # Copied from https://github.com/maltfield/rtd-github-pages
-    runs-on: ubuntu-latest
-    container: debian:buster-slim
-    steps:
-      - name: Setup git
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: |
-          apt-get update
-          apt-get install -y git
-          git clone --depth 1 "https://token:${GITHUB_TOKEN}@github.com/${GITHUB_REPOSITORY}.git" .
-        shell: bash
-
-      - name: Execute script to build the documentation and update pages
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: "docs/buildDocs.sh"
-        shell: bash
