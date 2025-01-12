@@ -31,12 +31,14 @@ jobs:
         shell: bash
       - name: Execute script to build our documentation and update pages
         run: |
-          which python
-          which pip
-          which poetry
-          echo $PYTHONPATH
-          ls /home/runner/.local/bin/
+          echo local
           ls /home/runner/.local
+          echo usrbin
+          ls /usr/bin
+          echo pythonpath
+          echo $PYTHONPATH
+          echo localllib
+          ls /home/runner/.local/lib
           cd docs
           make clean
           make html
