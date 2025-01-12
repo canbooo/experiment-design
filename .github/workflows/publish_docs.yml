@@ -30,8 +30,6 @@ jobs:
           pip install poetry
           poetry install --with docs
         shell: bash
-
-      - uses: actions/checkout@v1
       - uses: ammaraskar/sphinx-action@master
         with:
           docs-folder: "docs/"
