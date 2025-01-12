@@ -77,8 +77,6 @@ if __name__ == "__main__":
         fig, ax = create_iterative_plot(does, step_grids=grids)
         ax.set_title(title)
         plt.axis("off")
-        plt.savefig(
-            f"../media/os_extension_by_doubling_{i_step}.png", bbox_inches="tight"
-        )
+        plt.savefig(f"os_extension_by_doubling_{i_step}.png", bbox_inches="tight")
 
     plt.show()
