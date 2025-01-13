@@ -5,16 +5,17 @@
 Experiment Design via Orthogonal Sampling
 '''''''''''''''''''''''''''''''''''''''''
 
-Assume that we want to conduct experiments and have complete control over the values that the input parameters can take.
-There are a number of approaches to select values, from
+Suppose we want to conduct experiments and have complete control over the values of the input parameters.
+There are a number of approaches to select values, including
 
  - `factorial designs <https://en.wikipedia.org/wiki/Factorial_experiment>`_,
  - `central composite design <https://en.wikipedia.org/wiki/Central_composite_design>`_,
  - `A-, C-, D-, ... optimal designs <https://en.wikipedia.org/wiki/Optimal_experimental_design>`_,
 
-and so on. Although all of these designs have beneficial properties such as being space-filling or efficient concerning
-certain optimization criteria, they do not account for parameter uncertainty. However, modeling
-uncertainty may be required for certain tasks, such as doing statistical inference based on the sample. Orthogonal design
+and others. Although all of these designs have beneficial properties such as being space-filling or efficient concerning
+certain optimization criteria, they do not account for parameter uncertainty.
+
+However, modeling uncertainty is often necessary for tasks such as statistical inference based on a sample. Orthogonal design
 allows us to model the parameter uncertainties while providing experiment designs with higher quality compared to
 random sampling with respect to space-filling properties. Since orthogonal sampling is a generalization of Latin
 hypercube sampling ( |LHS| ) to non-uniform variables, we will begin by describing how an experiment can be designed
@@ -27,10 +28,9 @@ Latin hypercube sampling
 `McKay et al. (1979) <https://www.researchgate.net/publication/235709905_A_Comparison_of_Three_Methods_for_Selecting_Vales_of_Input_Variables_in_the_Analysis_of_Output_From_a_Computer_Code>`_.
 Three steps are required to generate an |LHS|. For visualization purposes, we will be using a two dimensional space
 with the bounds :math:`[0, 1]^2`. Before generating the design, we need to decide how many samples we will need. For now
-let us create 8 samples. First, we partition the space into small squares (or hypercubes, if we had more than two
-dimensions), such that each dimension is partitioned into 8 parts. We will be calling these hypercubes bins from here on out.
+let's create 8 samples. First, we partition the space into small squares (or hypercubes, if we had more than two
+dimensions), such that each dimension is divided into 8 parts. We will refer to these hypercubes as `bins`.
 We can visualize this as follows:
-
 
 .. code:: python
 
@@ -47,7 +47,7 @@ We can visualize this as follows:
     :align: center
 
 Next, we place each sample such that each bin is occupied only ones in each direction. This is quite easy to implement,
-but since we are show casing the capabilities of experiment-design, let us use it here.
+but since we are show casing the capabilities of :code:`experiment-design`, let's use it here.
 
 .. code:: python
 
@@ -65,8 +65,8 @@ but since we are show casing the capabilities of experiment-design, let us use i
 There are a few important details in the abov.. code so let's walk line by line. After importing the necessary modules,
 we first set a random seed. This is important for reproducibility. Given the same inputs and seed, we will always
 generate the same design on the same machine. Next, we define a two dimensional parameter space (:class:`.ParameterSpace`)
-within the bounds :math:`[0, 1]^2`. Note that in general, bounds do not have to be equal, they can be any finite number
-as long as the lower bound at the index m representing the variable m is smaller than the upper bound at the index m.
+within the bounds :math:`[0, 1]^2`. In general, bounds need not be equal. They can be any finite values, provided the lower
+bound for a variable is smaller than its corresponding upper bound.
 Following, we initiate an :class:`.OrthogonalSamplingDesigner`
 with the parameter. :code:`inter_bin_randomness=0.`. This controls the randomness of the placement of samples within the
 bins. A value of 0. places the samples exactly in the middle of the bins, whereas a value of 0.8 (default) would lead to
@@ -75,11 +75,14 @@ here :math:`1/8=0.125`. Finally, we generate a doe using only 1 step, i.e. skipp
 would do normally and plot the result.
 
 Final step is not mandatory, but it improves the |DoE| quality a lot, as proposed by `Joseph et al. (2008) <https://www3.stat.sinica.edu.tw/statistica/oldpdf/A18n17.pdf>`_:
-Optimize the samples using simulated annealing by switching the values of samples along each dimension. We will talk about
-the optimization objectives later. Notice that any switches would not violate the |LHS| rules; each bin would still be
-occupied only once. This is done automatically in experiment-design unless we turn it off as we did before. In order to
-start from the same |DoE|, we set the same seed but use the default number of steps.
-
+Optimize the samples using `simulated annealing` by switching the values of samples along each dimension.
+`Simulated annealing <https://en.wikipedia.org/wiki/Simulated_annealing>`_ is a stochastic optimization algorithm inspired by the annealing process in metallurgy.
+It is particularly effective for optimizing black-box objective functions,
+especially in cases where gradients are unavailable or the solution space is highly non-linear and complex.
+We will talk about the optimization objectives used in :code:`experiment-design` later.
+Switching values does not violate the |LHS| rules; each bin remains occupied only once.
+This is done automatically in experiment-design unless we turn it off as we did before.
+In order to start from the same |DoE|, we set the same seed but use the default number of steps.
 
 .. code:: python
 
@@ -90,7 +93,7 @@ start from the same |DoE|, we set the same seed but use the default number of st
 .. image:: images/os_lhs_opt.png
     :align: center
 
-Finally, let us also create some random samples just to use as a baseline. We can do this using experiment-design too.
+Finally, we create some random samples to serve as a baseline. We can do this using experiment-design too.
 Implicitly, there is also some search for the random sampler, where we evaluate the random |DoE| on the same set of
 objectives as before and choose the one that achieves the best results. For the purposes of this document, we will
 deactivate the optimization by setting. :code:`steps=1` as we did before.
@@ -106,11 +109,14 @@ deactivate the optimization by setting. :code:`steps=1` as we did before.
 .. image:: images/os_lhs_final.png
     :align: center
 
-.. _quality metrics:
+
+Quality metrics
+^^^^^^^^^^^^^^^
+
 
 We can look at two metrics to evaluate the quality of the |DoE|; the minimum pairwise distance to evaluate its
-space-filling properties as well as the correlation coefficient :math:`|\Delta\rho|` between the variables. We are using
-:code:`scipy.spatial.distance.pdist(doe).min()` for the pairwise distance metric and
+space-filling properties as well as the correlation coefficient :math:`|\Delta\rho|` between the variables. We use
+:code:`scipy.spatial.distance.pdist(doe).min()` to compute the pairwise distance metric and
 :code:`np.abs(np.corrcoef(doe, rowvar=False)[0, 1])` for the correlation error. Results are given below.
 
 .. list-table::
@@ -136,8 +142,8 @@ in experiment-design, where we put 9 times more emphasis on the space filling pr
 Nevertheless, as we will see later, we can change the weights we use arbitrarily and even supply a custom objective function.
 In any case, both |LHS| designs achieve better metrics compared to random sampling.
 
-Now that we have showcased how |LHS| samples are generated and that it may achieve a higher quality compared to random
-sampling, let us talk about orthogonal sampling and why it is useful for statistical inference.
+Having demonstrated how |LHS| samples are generated and their quality compared to random sampling,
+we now discuss orthogonal sampling and its usefulness for statistical inference.
 
 
 Orthogonal sampling
@@ -145,10 +151,10 @@ Orthogonal sampling
 
 It is straightforward to generalize |LHS| to orthogonal sampling, where we generate an |LHS| design in :math:`[0, 1]^d`,
 in a d-dimensional parameter space, which we interpret as probabilities and use the inverse |CDF| functions of the
-marginal variables to map them to actual values. Let us see this in action, again in a 2-dimensional space for
-visualization purposes. Let us define two Gaussian variables :math:`X_1, X_2 \sim \mathcal{N}(2, 1)` with a mean of
-2 and a variance of 1. Again, to generate 8 sample, we start by partitioning the probability space into 8, which yields
-the same bounds as before. Next, we map them back to the original space. Th.. code looks like this:
+marginal variables to map them to actual values. Let's see this in action in a 2-dimensional space for
+visualization purposes. Let's define two Gaussian variables :math:`X_1, X_2 \sim \mathcal{N}(2, 1)` with a means :math:`\mu_1 = \mu_2 = 2`
+and a variances :math:`\sigma_1 = \sigma_2 = 1`. Again, we start by partitioning the probability space into 8 intervals to generate 8 samples, which yields
+the same bounds as before. Next, we map them back to the original space. The code looks like this:
 
 
 .. code:: python
@@ -178,17 +184,18 @@ the same bounds as before. Next, we map them back to the original space. Th.. co
 .. image:: images/os_grid.png
     :align: center
 
-Notice the :code:`infinite_bound_probability_tolerance` variable in the abov.. code. Since the normal distribution has
+Notice the :code:`infinite_bound_probability_tolerance` variable in the above. Since the normal distribution has
 infinite bounds, i.e. unbounded support, the outer most grid lines for each dimension corresponding to the probabilities
 0 and 1 would also be at infinity. In order to still provide a finite bound for practical applications and thus enforce
 finite bin sizes for all dimensions, we define the parameter :code:`infinite_bound_probability_tolerance`, which is set to
 `1e-6` by default. In this case, we set it to a much larger value for visualization purposes.
 
-Following, we generate an optimized |DoE| starting from the same initial solution as before. Notice that beside the
-bin sizes, placement of the samples are also different compared to the above example. Besides the random effects which
-are negligible in this case due to the small number of samples and the value of :code:`inter_bin_randomness`, the reason is
-although the probability space is same as the |LHS| example, varying bin size in the actual space yield an optimal
-placement that is different than the uniform case.
+Next, we generate an optimized |DoE| starting from the same initial solution as before.
+Notice that, besides the bin sizes, the placement of the samples is also different compared to the above example.
+The random effects are negligible in this case due to the small number of samples and the value of :code:`inter_bin_randomness`.
+Although the probability space is the same as in the |LHS| example,
+the reason for the difference in results is the varying bin sizes in the parameter space,
+which yield an optimal placement that differs from the uniform case.
 
 .. code:: python
 
@@ -297,11 +304,12 @@ in higher dimensions. Analytically, we know that :math:`\mu_Y = 2d`, where :math
     Note that th.. code above may take a long time to run. The reason behind this is the number of optimization steps
     taken by :class:`.OrthogonalSamplingDesigner` especially in lower sample setting (:math:`\leq 128`) as the optimization has a
     high impact on the quality of the resulting |DoE|. You can choose a smaller :code:`step` value
-    (default is 20000 for :code:`sample_size` :math:`\leq 128` and `2000` otherwise) or even set it to 1 or less to avoid
-    any optimization which would accelerate the run time significantly.
+    (the default is 20000 for :code:`sample_size` :math:`\leq 128` and `2000` otherwise) or even set it to 1 or less to avoid
+    any optimization, which would accelerate the run time significantly.
 
-Finally, the reduced estimation variance is even more significant for non-linear and multimodal functions. For example,
-consider the `Ackley function <https://en.wikipedia.org/wiki/Ackley_function>`_ with the recommended default values.
+Finally, the reduced estimation error becomes even more significant for non-linear and multimodal functions. For example,
+consider the `Ackley function <https://en.wikipedia.org/wiki/Ackley_function>`_ with its recommended default values. We choose
+this function due to its multimodality and complexity despite being 2 dimensional.
 It is difficult to compute its expectation, but we can approximate it with a very high number of random samples.
 
 .. code:: python
@@ -319,7 +327,7 @@ It is difficult to compute its expectation, but we can approximate it with a ver
     print("Std. Err.", np.std(y, ddof=1) / np.sqrt(y.shape[0]))  # 0.007
 
 
-When we have a more limited sample budget, using orthogonal sampling leads to a more accurate estimate
+When we have a more limited sample budget, using orthogonal sampling leads to more accurate estimates.
 
 .. code:: python
 
@@ -330,30 +338,34 @@ When we have a more limited sample budget, using orthogonal sampling leads to a 
     print("Orthogonal Sampling:", np.mean(ackley(doe_os)))  # 5.2
     print("Random Sampling:", np.mean(ackley(doe_rs)))  # 5.6
 
+In summary, orthogonal sampling increases estimation accuracy and reduces estimation variance when conducting statistical inference.
+It also creates space-filling samples that improves the exploration and benefit machine learning models similar to |LHS|.
 
-Why should you use `experiment-design`?
+
+Why choose `experiment-design`?
 ----------------------------------------
 
-So far, we have been talking about the advantages of |LHS| and orthogonal sampling over random sampling. However,
-:code:`experiment-design` is not the only library to provide this functionality. Other libraries, such as
-`pyDOE <https://pydoe3.readthedocs.io/en/latest/>`_, also provide the capability to create an |LHS|, even using similar
-optimization criteria as :code:`experiment-design` although we need to choose between either optimizing for the minimum
-distance or the maximum correlation error. Moreover, we could use this capability to create an orthogonal sampling
-simply by generating an |LHS| in :math:`[0, 1]^d` and using the values as probabilities. In short, the benefits of
-using :code:`experiment-design` over other choices for generating |LHS| and orthogonal design are
+So far, we have been discussing the advantages of |LHS| and orthogonal sampling over random sampling. However,
+:code:`experiment-design` is not the only library to provide this functionality. For instance,
+`pyDOE <https://pydoe3.readthedocs.io/en/latest/>`_ is a popular library that provides the capability to create an |LHS|,
+even using similar optimization criteria as :code:`experiment-design`. Nevertheless, users need to choose between either
+optimizing for the minimum distance or the maximum correlation error. Moreover, we could use this capability to create
+an orthogonal sampling simply by generating an |LHS| in :math:`[0, 1]^d` and using the values as probabilities.
+In short, the benefits of using :code:`experiment-design` over other choices for generating |LHS| and orthogonal design are
 
-- Generating space-filling |DoE| with low correlation error
-- Flexible optimization objectives for |DoE| generation
-- Ability to simulate correlation while keeping space-filling properties
-- Ability to extend |LHS| and orthogonal sampling while adhering to the Latin hypercube scheme as long as possible
+- Generation of space-filling |DoE| with low correlation error
+- Flexible optimization criteria for |DoE| generation
+- Capability to simulate correlations while maintaining space-filling properties
+- Extending |LHS| and orthogonal sampling while adhering to the Latin hypercube scheme as much as possible
 
-In the following, we will demonstrate these abilities in detail.
+
+The following sections demonstrate these capabilities in detail.
 
 Generate high quality |DoE| with built-in or custom metrics
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Before looking at further features, let us put this hypothesis into test and do a small comparison. Note that you need to install
-`pyDOE <https://pydoe3.readthedocs.io/en/latest/>`_ to run the following. code.
+Before looking at further features, let's put this hypothesis into test and do a small comparison. Note that you need to install
+`pyDOE <https://pydoe3.readthedocs.io/en/latest/>`_ to run the following code.
 
 .. code:: python
 
@@ -379,7 +391,7 @@ Before looking at further features, let us put this hypothesis into test and do 
     np.random.seed(1337)
     doe_ed = OrthogonalSamplingDesigner().design(space, sample_size, steps=20_000)
 
-As we did :ref:`before <quality metrics>`, let us compute the correlation error as well as the minimum pairwise distance.
+As before (see `Quality metrics`_), we will compute the correlation error as well as the minimum pairwise distance.
 
 .. list-table::
     :header-rows: 1
@@ -406,7 +418,7 @@ represents better space filling properties. Moreover, also the correlation error
 compared to all results generated by :code:`pyDOE3` except when using correlation error as the target, which achieves the worst
 the minimum pairwise distance. In general, the correlation error achieved by :code:`experiment-design` is negligibly small
 for most practical purposes. Nevertheless, we can improve the result further by providing a custom scoring function;
-a feature that is not present in other libraries. Let us see it in action.
+a feature that is not present in other libraries. Let's see it in action.
 
 .. code:: python
 
@@ -423,11 +435,12 @@ a feature that is not present in other libraries. Let us see it in action.
 
 Using the above code, we achieve a maximum correlation error of :code:`5e-7`, a score lower than the best score achieved with
 :code:`pyDOE`. Note that :code:`correlation_scorer_factory` is essentially a simplified version of
-:class:`.MaxCorrelationScorerFactory` which is one of the two weighted objectives used by default. We used the above
-implementation instead to demonstrate the ability to define custom scoring functions, including those that are domain
-specific.
+:class:`.MaxCorrelationScorerFactory` which is one of the two weighted objectives used by default. This implementation was chosen to
+demonstrate the ability to define custom scoring functions, including those tailored to specific domains and even penalty functions
+representing constraints. Support for actual constraints is currently not on our road map. If you are interested in this functionality,
+please create an issue on `github <https://github.com/canbooo/experiment-design>`.
 
-In any case, things (might) get worse when we map the probabilities to the actual parameter space. Let us consider a
+However, mapping probabilities to the actual parameter space may lead to worse results. Let's consider a
 space with two non-normal variables. We can map the probabilities using the :class:`.ParameterSpace.value_of` method.
 
 .. code:: python
@@ -473,7 +486,7 @@ space. Therefore, using :code:`pyDOE3` for non-uniform use cases may lead to wor
 Simulate correlated variables
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Another use case that is covered by :code:`experiment-design` is simulating a correlation between the variables. There is no
+Another feature of :code:`experiment-design` is the ability to simulate correlations between variables. There is no
 possibility to simulate correlated random variables using :code:`pyDOE3` but it is as easy as setting a keyword argument in
 :class:`.ParameterSpace`
 
@@ -493,10 +506,10 @@ possibility to simulate correlated random variables using :code:`pyDOE3` but it 
 Extend experiments adaptively
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Finally, the most novel feature of :code:`experiment-design` is the ability to extend an |LHS| and an orthogonal sampling by
-generating new samples, that still follow the Latin hypercube scheme if possible
+Finally, one of the most novel features of :code:`experiment-design` is the ability to extend an |LHS| and an orthogonal sampling
+by generating new samples that adhere to the Latin hypercube scheme when possible
 (See `Bogoclu (2022) <https://hss-opus.ub.ruhr-uni-bochum.de/opus4/frontdoor/deliver/index/docId/9143/file/diss.pdf>`_).
-One use case of this feature is to extend the experiments in regions with interesting or unsatisfying results. Let us
+One use case of this feature is to extend the experiments in regions with interesting or unsatisfying results. Let's
 consider the same problem as above, where we wanted to estimate the mean of the Ackley function.
 
 .. code:: python
@@ -535,9 +548,10 @@ consider the same problem as above, where we wanted to estimate the mean of the 
 .. image:: images/extend_ackley_conv.png
     :align: center
 
-It can be seen that the value converges to the estimate made by :math:`10^5` random samples. Notice that we are doubling
-the number of samples each time. This is not mandatory but it guarantees that the resulting |DoE| is an |LHS|. Let us
-visualize the first few iterations as visualizing all 256 samples is not very nice on the eyes.
+It can be seen that the value converges to the estimate made by :math:`10^5` random samples.
+Notice that we are doubling the sample size at each step.
+This is not mandatory but it guarantees that the resulting |DoE| is an |LHS|.
+Let's visualize the first few iterations as visualizing all 256 samples is not very nice on the eyes.
 
 .. code:: python
 
@@ -566,8 +580,9 @@ visualize the first few iterations as visualizing all 256 samples is not very ni
 .. image:: images/extend_ackley_doe.png
     :align: center
 
-Here are some better visualizations of |DoE| extensions. Notice that the space, in which we want to extend the |DoE|
-does not necessarily have to match the original space, nor do we have to double the number of samples.
+Here are some further visualizations of |DoE| extensions.
+Note that the space in which we extend the |DoE| does not need to match the original space,
+and we are not required to double the sample size.
 
 .. image:: images/lhs_extension_by_doubling.gif
     :align: left

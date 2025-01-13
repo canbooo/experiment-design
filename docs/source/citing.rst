@@ -4,11 +4,11 @@ Citing
 .. image:: https://zenodo.org/badge/756928984.svg
   :target: https://doi.org/10.5281/zenodo.14635604
 
-Citations are very welcome. You can find the Zenodo DOI above, but if you want to cite the methods or
-if this library has helped you with your research, please consider citing either of the following:
+Citations are greatly appreciated. You can find the Zenodo DOI above,
+but if you would like to cite the methods or if this library has supported your research, please consider referencing one of the following works:
 
 
-- Journal paper about locally extending experiment designs for adaptive sampling:
+- Journal article on locally extending experiment designs for active learning for multi-objective uncertainty optimization:
 
 .. code:: latex
 
@@ -22,7 +22,7 @@ if this library has helped you with your research, please consider citing either
       pdf         = {https://www.sciencedirect.com/science/article/abs/pii/S1568494621007286},
     }
 
-- PhD thesis:
+- PhD thesis for using local |LHS| extension for both uncertainty quantification and optimization
 
 .. code:: latex
 

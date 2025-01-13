@@ -7,8 +7,9 @@
 
 # `experiment-design`: Tools to create and extend experiment plans
 
-`experiment-design` allows you to create high quality designs of experiments with just a few lines
-of code. Additionally, it allows you to extend the designs of experiments...
+`experiment-design` allows you to create high-quality experimental designs with just a few lines
+of code. Additionally, it allows you to extend the designs of experiments by generating new samples
+that cover the parameter space as much as possible...
 <p float="left">
     <img src="docs/source/images/lhs_extension_by_doubling.gif" alt="Image: Latin hypercube sampling extension by doubling" width="200">
     <img src="docs/source/images/lhs_extension_by_constant.gif" alt="Image: Latin hypercube sampling extension using one sample at a time" width="200">
@@ -23,8 +24,8 @@ of code. Additionally, it allows you to extend the designs of experiments...
 
 <img src="docs/source/images/lhs_correlation.gif" alt="Image: Latin hypercube sampling with correlated variables" width="200">
 
-There is even more! See the [documentation](https://experiment-design.readthedocs.io) for more details and
-especially the section "[Why should you use `experiment-design`?](https://experiment-design.readthedocs.io/en/latest/orthogonal_sampling.html#why-should-you-use-experiment-design)".
+And there's even more! For more details, check out the [documentation](https://experiment-design.readthedocs.io) and
+especially the section "[Why choose `experiment-design`?](https://experiment-design.readthedocs.io/en/latest/orthogonal_sampling.html#why-should-you-use-experiment-design)".
 
 Also, see [demos](./demos) to understand how the images above were created.
 
@@ -33,10 +34,10 @@ Also, see [demos](./demos) to understand how the images above were created.
 
 `pip install experiment-design`
 
-## Cite
+## Citing
 
-You can use the Zenodo DOI (10.5281/zenodo.14635604) to cite the code, but if this repository helps you with your research,
-please consider citing either of the following:
+You can cite the code using the Zenodo DOI (10.5281/zenodo.14635604). If this repository has assisted you in your research,
+please consider referencing one of the following works:
 
 - Journal paper about locally extending experiment designs for adaptive sampling:
 ```latex
