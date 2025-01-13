@@ -13,7 +13,7 @@ experiment-design allows anyone to easily create and extend randomized experimen
 creating designs using
 
 - Random sampling
-- `Latin hypercube sampling <orthogonal_sampling.html#latin-hypercube-sampling>`_
+- `Latin hypercube sampling <orthogonal_sampling.html#latin-hypercube-sampling>`_ (see `wikipedia <https://en.wikipedia.org/wiki/Latin_hypercube_sampling>`_ for an introduction)
 - `Orthogonal sampling <orthogonal_sampling.html#orthogonal-sampling>`_
 
 Experiment variables can be discrete and continuous as well as correlated. `experiment-design` can handle all of these
@@ -30,3 +30,4 @@ cases and seeks to provide a space-filling design of experiments with a small co
    orthogonal_sampling
    api_reference
    citing
+   contribution

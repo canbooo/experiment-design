@@ -13,14 +13,15 @@ Installation
 
     pip install experiment-design
 
-Note that experiment-design does not have a `matplotlib <https://matplotlib.org/>`_ dependency but if you want to
+Note that :code:`experiment-design` does not have a `matplotlib <https://matplotlib.org/>`_ dependency but if you want to
 reproduce the code in this documentation, you will also need to install it.
 
 Create and extend experiment designs
 ------------------------------------
 
-Let us first create a Latin hypercube sampling (`wikipedia <https://en.wikipedia.org/wiki/Latin_hypercube_sampling>`_).
-Later, we will talk about why this is superior to random sampling.
+Let us first create a Latin hypercube sampling (|LHS|). :doc:`Later  <orthogonal_sampling>`, we will talk about why this is superior to random sampling. We will first define
+a :class:`.ParameterSpace` with uniform distribution using the function :code:`create_continuous_uniform_space` and
+then use the :class:`.OrthogonalSamplingDesigner` class to generate the |DoE| and plot the result.
 
 .. code:: python
 
@@ -32,14 +33,15 @@ Later, we will talk about why this is superior to random sampling.
     plt.scatter(doe[:, 0], doe[:, 1])
     plt.xlim([-2, 2]);plt.ylim([-2, 2]);plt.grid()
 
-This will result in a plot like the following
+This will result in a plot similar to the following
 
 .. image:: images/quickstart_lhs_1.png
     :align: center
 
 Since we are generating randomized designs, the placement of the samples may be different in each run. Imagine that
 we are interested in a smaller space and want to generate more samples there, while filling the space as much as
-possible. This is easy to achieve with experiment design
+possible. This is easy to achieve with experiment design; we only need to provide old samples using the :code:`old_sample`
+keyword argument.
 
 .. code:: python
 

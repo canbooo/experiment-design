@@ -5,19 +5,19 @@
 Experiment Design via Orthogonal Sampling
 '''''''''''''''''''''''''''''''''''''''''
 
-Assume that we want to conduct experiments and we have a total control on which values the input parameters will take.
+Assume that we want to conduct experiments and have complete control over the values that the input parameters can take.
 There are a number of approaches to select values, from
 
  - `factorial designs <https://en.wikipedia.org/wiki/Factorial_experiment>`_,
  - `central composite design <https://en.wikipedia.org/wiki/Central_composite_design>`_,
  - `A-, C-, D-, ... optimal designs <https://en.wikipedia.org/wiki/Optimal_experimental_design>`_,
 
-and so on. Although all of these designs have various nice properties such as being space-filling or efficient with
-respect to some optimization criteria, they do not take the parameter uncertainty into account. However, modelling the
-uncertainty may be required by some tasks, e.g. when estimating statistical moments from the sample. Orthogonal design
+and so on. Although all of these designs have beneficial properties such as being space-filling or efficient concerning
+certain optimization criteria, they do not account for parameter uncertainty. However, modeling
+uncertainty may be required for certain tasks, such as doing statistical inference based on the sample. Orthogonal design
 allows us to model the parameter uncertainties while providing experiment designs with higher quality compared to
 random sampling with respect to space-filling properties. Since orthogonal sampling is a generalization of Latin
-hypercube sampling ( |LHS| ) to non-uniform variables, we will start by describing how an experiment can be designed
+hypercube sampling ( |LHS| ) to non-uniform variables, we will begin by describing how an experiment can be designed
 using |LHS| and why it is superior to random sampling.
 
 Latin hypercube sampling
@@ -25,7 +25,7 @@ Latin hypercube sampling
 
 |LHS| is a generalization of the Latin sphere to higher dimensional spaces, first proposed by
 `McKay et al. (1979) <https://www.researchgate.net/publication/235709905_A_Comparison_of_Three_Methods_for_Selecting_Vales_of_Input_Variables_in_the_Analysis_of_Output_From_a_Computer_Code>`_.
-We will need three steps to generate an |LHS|. For visualization purposes, we will be using a two dimensional space
+Three steps are required to generate an |LHS|. For visualization purposes, we will be using a two dimensional space
 with the bounds :math:`[0, 1]^2`. Before generating the design, we need to decide how many samples we will need. For now
 let us create 8 samples. First, we partition the space into small squares (or hypercubes, if we had more than two
 dimensions), such that each dimension is partitioned into 8 parts. We will be calling these hypercubes bins from here on out.
@@ -62,9 +62,9 @@ but since we are show casing the capabilities of experiment-design, let us use i
 .. image:: images/os_lhs_init.png
     :align: center
 
-There are a few important details in the abov.. code so let's walk line by line. After the import, we first set a random
-seed. This is important for the reproducibility. Given the same inputs and seed, we will always generate the same design
-on the same machine. Next, we define a two dimensional parameter space (:class:`.ParameterSpace`)
+There are a few important details in the abov.. code so let's walk line by line. After importing the necessary modules,
+we first set a random seed. This is important for reproducibility. Given the same inputs and seed, we will always
+generate the same design on the same machine. Next, we define a two dimensional parameter space (:class:`.ParameterSpace`)
 within the bounds :math:`[0, 1]^2`. Note that in general, bounds do not have to be equal, they can be any finite number
 as long as the lower bound at the index m representing the variable m is smaller than the upper bound at the index m.
 Following, we initiate an :class:`.OrthogonalSamplingDesigner`
