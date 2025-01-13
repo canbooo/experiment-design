@@ -68,7 +68,7 @@ on the same machine. Next, we define a two dimensional parameter space (:class:`
 within the bounds :math:`[0, 1]^2`. Note that in general, bounds do not have to be equal, they can be any finite number
 as long as the lower bound at the index m representing the variable m is smaller than the upper bound at the index m.
 Following, we initiate an :class:`.OrthogonalSamplingDesigner`
-with the parameter.. code:`inter_bin_randomness=0.`. This controls the randomness of the placement of samples within the
+with the parameter. :code:`inter_bin_randomness=0.`. This controls the randomness of the placement of samples within the
 bins. A value of 0. places the samples exactly in the middle of the bins, whereas a value of 0.8 (default) would lead to
 placing samples anywhere between :math:`[-0.4 \delta, 0.4 \delta]` within the bin, where :math:`\delta` is the bin size,
 here :math:`1/8=0.125`. Finally, we generate a doe using only 1 step, i.e. skipping any optimization for now, that we
@@ -93,7 +93,7 @@ start from the same |DoE|, we set the same seed but use the default number of st
 Finally, let us also create some random samples just to use as a baseline. We can do this using experiment-design too.
 Implicitly, there is also some search for the random sampler, where we evaluate the random |DoE| on the same set of
 objectives as before and choose the one that achieves the best results. For the purposes of this document, we will
-deactivate the optimization by setting.. code:`steps=1` as we did before.
+deactivate the optimization by setting. :code:`steps=1` as we did before.
 
 .. code:: python
 
@@ -110,8 +110,8 @@ deactivate the optimization by setting.. code:`steps=1` as we did before.
 
 We can look at two metrics to evaluate the quality of the |DoE|; the minimum pairwise distance to evaluate its
 space-filling properties as well as the correlation coefficient :math:`|\Delta\rho|` between the variables. We are using
-`scipy.spatial.distance.pdist(doe).min()` for the pairwise distance metric and
-`np.abs(np.corrcoef(doe, rowvar=False)[0, 1])` for the correlation error. Results are given below.
+:code:`scipy.spatial.distance.pdist(doe).min()` for the pairwise distance metric and
+:code:`np.abs(np.corrcoef(doe, rowvar=False)[0, 1])` for the correlation error. Results are given below.
 
 .. list-table::
     :header-rows: 1
@@ -178,15 +178,15 @@ the same bounds as before. Next, we map them back to the original space. Th.. co
 .. image:: images/os_grid.png
     :align: center
 
-Notice the `infinite_bound_probability_tolerance` variable in the abov.. code. Since the normal distribution has
+Notice the :code:`infinite_bound_probability_tolerance` variable in the abov.. code. Since the normal distribution has
 infinite bounds, i.e. unbounded support, the outer most grid lines for each dimension corresponding to the probabilities
 0 and 1 would also be at infinity. In order to still provide a finite bound for practical applications and thus enforce
-finite bin sizes for all dimensions, we define the parameter `infinite_bound_probability_tolerance`, which is set to
+finite bin sizes for all dimensions, we define the parameter :code:`infinite_bound_probability_tolerance`, which is set to
 `1e-6` by default. In this case, we set it to a much larger value for visualization purposes.
 
 Following, we generate an optimized |DoE| starting from the same initial solution as before. Notice that beside the
 bin sizes, placement of the samples are also different compared to the above example. Besides the random effects which
-are negligible in this case due to the small number of samples and the value of `inter_bin_randomness`, the reason is
+are negligible in this case due to the small number of samples and the value of :code:`inter_bin_randomness`, the reason is
 although the probability space is same as the |LHS| example, varying bin size in the actual space yield an optimal
 placement that is different than the uniform case.
 
@@ -211,9 +211,9 @@ benefit of using orthogonal sampling.
 Let :math:`X_1, X_2` follow the same distribution as above and let :math:`Y = X_1 + X_2` be a random variable, for which
 we want to estimate the expectation :math:`\mathbb{E}[Y] = \mu_Y`. Using the linear relationship above and due to the
 normal distribution of the variables and assuming independence, we can infer that :math:`Y \sim \mathcal{N}(4, \sqrt{2})`
-and thus `\mu_Y=4`. For the purposes of this demonstration, assume that the exact relationship between :math:`X_1, X_2`
+and thus :math:`\mu_Y=4`. For the purposes of this demonstration, assume that the exact relationship between :math:`X_1, X_2`
 and :math:`Y` are not known but we can use the black-box function :math:`Y = f(X_1, X_2)` to estimate :math:`\mu_Y` from
-samples. We could use the followin.. code for the estimation using `OrthogonalSamplingDesigner` and `RandomSamplingDesigner`
+samples. We could use the following code for the estimation using :class:`.OrthogonalSamplingDesigner` and :class:`.RandomSamplingDesigner`
 
 .. code:: python
 
@@ -295,9 +295,9 @@ in higher dimensions. Analytically, we know that :math:`\mu_Y = 2d`, where :math
 
 .. warning::
     Note that th.. code above may take a long time to run. The reason behind this is the number of optimization steps
-    taken by `OrthogonalSamplingDesigner` especially in lower sample setting () as the optimization has a
-    high impact on the quality of the resulting |DoE|. You can choose a smaller `step` value
-    (default is `20000` for `sample_size` :math:`\leq 128` and `2000` otherwise) or even set it to 1 or less to avoid
+    taken by :class:`.OrthogonalSamplingDesigner` especially in lower sample setting (:math:`\leq 128`) as the optimization has a
+    high impact on the quality of the resulting |DoE|. You can choose a smaller :code:`step` value
+    (default is 20000 for :code:`sample_size` :math:`\leq 128` and `2000` otherwise) or even set it to 1 or less to avoid
     any optimization which would accelerate the run time significantly.
 
 Finally, the reduced estimation variance is even more significant for non-linear and multimodal functions. For example,
@@ -335,12 +335,12 @@ Why should you use `experiment-design`?
 ----------------------------------------
 
 So far, we have been talking about the advantages of |LHS| and orthogonal sampling over random sampling. However,
-`experiment-design` is not the only library to provide this functionality. Other libraries, such as
+:code:`experiment-design` is not the only library to provide this functionality. Other libraries, such as
 `pyDOE <https://pydoe3.readthedocs.io/en/latest/>`_, also provide the capability to create an |LHS|, even using similar
-optimization criteria as `experiment-design` although we need to choose between either optimizing for the minimum
+optimization criteria as :code:`experiment-design` although we need to choose between either optimizing for the minimum
 distance or the maximum correlation error. Moreover, we could use this capability to create an orthogonal sampling
 simply by generating an |LHS| in :math:`[0, 1]^d` and using the values as probabilities. In short, the benefits of
-using `experiment-design` over other choices for generating |LHS| and orthogonal design are
+using :code:`experiment-design` over other choices for generating |LHS| and orthogonal design are
 
 - Generating space-filling |DoE| with low correlation error
 - Flexible optimization objectives for |DoE| generation
@@ -401,10 +401,10 @@ As we did :ref:`before <quality metrics>`, let us compute the correlation error 
       - 0.10
       - 1e-4
 
-In comparison, the minimum pairwise distance for the |DoE| generated by the `experiment-design` is much larger, which
-represents better space filling properties. Moreover, also the correlation error is better for `experiment-design`
-compared to all results generated by `pyDOE` except when using correlation error as the target, which achieves the worst
-the minimum pairwise distance. In general, the correlation error achieved by `experiment-design` is negligibly small
+In comparison, the minimum pairwise distance for the |DoE| generated by the :code:`experiment-design` is much larger, which
+represents better space filling properties. Moreover, also the correlation error is better for :code:`experiment-design`
+compared to all results generated by :code:`pyDOE3` except when using correlation error as the target, which achieves the worst
+the minimum pairwise distance. In general, the correlation error achieved by :code:`experiment-design` is negligibly small
 for most practical purposes. Nevertheless, we can improve the result further by providing a custom scoring function;
 a feature that is not present in other libraries. Let us see it in action.
 
@@ -421,8 +421,8 @@ a feature that is not present in other libraries. Let us see it in action.
     np.random.seed(1337)
     doe_ed_corr = designer.design(space, sample_size, steps=20_000)
 
-Using the above code, we achieve a maximum correlation error of `5e-7`, a score lower than the best score achieved with
-`pyDOE`. Note that `correlation_scorer_factory` is essentially a simplified version of
+Using the above code, we achieve a maximum correlation error of :code:`5e-7`, a score lower than the best score achieved with
+:code:`pyDOE`. Note that :code:`correlation_scorer_factory` is essentially a simplified version of
 :class:`.MaxCorrelationScorerFactory` which is one of the two weighted objectives used by default. We used the above
 implementation instead to demonstrate the ability to define custom scoring functions, including those that are domain
 specific.
@@ -445,7 +445,7 @@ space with two non-normal variables. We can map the probabilities using the :cla
 
 Results are given in the table below. It can be seen that first optimizing and than matching the probabilities leads to
 a much higher correlation error and smaller pairwise distance even for the |DoE| with good metrics in the probability
-space. Therefore, using `pyDOE` for non-uniform use cases may lead to worse metrics.
+space. Therefore, using :code:`pyDOE3` for non-uniform use cases may lead to worse metrics.
 
 .. list-table::
     :header-rows: 1
@@ -473,8 +473,8 @@ space. Therefore, using `pyDOE` for non-uniform use cases may lead to worse metr
 Simulate correlated variables
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Another use case that is covered by `experiment-design` is simulating a correlation between the variables. There is no
-possibility to simulate correlated random variables using `pyDOE` but it is as easy as setting a keyword argument in
+Another use case that is covered by :code:`experiment-design` is simulating a correlation between the variables. There is no
+possibility to simulate correlated random variables using :code:`pyDOE3` but it is as easy as setting a keyword argument in
 :class:`.ParameterSpace`
 
 .. code:: python
@@ -493,7 +493,7 @@ possibility to simulate correlated random variables using `pyDOE` but it is as e
 Extend experiments adaptively
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Finally, the most novel feature of `experiment-design` is the ability to extend an |LHS| and an orthogonal sampling by
+Finally, the most novel feature of :code:`experiment-design` is the ability to extend an |LHS| and an orthogonal sampling by
 generating new samples, that still follow the Latin hypercube scheme if possible
 (See `Bogoclu (2022) <https://hss-opus.ub.ruhr-uni-bochum.de/opus4/frontdoor/deliver/index/docId/9143/file/diss.pdf>`_).
 One use case of this feature is to extend the experiments in regions with interesting or unsatisfying results. Let us

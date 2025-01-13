@@ -7,7 +7,7 @@ Quickstart
 Installation
 ------------
 
-experiment-design can be installed using pip
+:code:`experiment-design` can be installed using pip
 
 .. code-block:: console
 
