@@ -29,13 +29,13 @@ especially the section "[Why should you use `experiment-design`?](https://experi
 Also, see [demos](./demos) to understand how the images above were created.
 
 ## Install
-`experiment-design` can be installed easily from PyPI using
+`experiment-design` can be easily installed from PyPI using:
 
 `pip install experiment-design`
 
 ## Cite
 
-You can use the zenodo DOI to cite the code, but if this repository helps you with your research,
+You can use the Zenodo DOI (10.5281/zenodo.14635604) to cite the code, but if this repository helps you with your research,
 please consider citing either of the following:
 
 - Journal paper about locally extending experiment designs for adaptive sampling:
