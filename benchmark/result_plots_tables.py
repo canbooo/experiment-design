@@ -31,11 +31,13 @@ if __name__ == "__main__":
         "Inv. Avg. Distance",
     ]:
         plt.figure(figsize=(12, 7))
+        plt.title("All distributions")
         sns.lineplot(df, x="dimension", y=metric_name, hue="algorithm")
         if metric_name == "Inv. Avg. Distance":
             plt.yscale("log")
 
         plt.figure(figsize=(12, 7))
+        plt.title("All distributions")
         sns.lineplot(df, x="sample", y=metric_name, hue="algorithm")
         if metric_name == "Inv. Avg. Distance":
             plt.yscale("log")
@@ -48,11 +50,13 @@ if __name__ == "__main__":
         "Inv. Avg. Distance",
     ]:
         plt.figure(figsize=(12, 7))
+        plt.title("Uniform distribution")
         sns.lineplot(uniform_df, x="dimension", y=metric_name, hue="algorithm")
         if metric_name == "Inv. Avg. Distance":
             plt.yscale("log")
 
         plt.figure(figsize=(12, 7))
+        plt.title("Uniform distribution")
         sns.lineplot(uniform_df, x="sample", y=metric_name, hue="algorithm")
         if metric_name == "Inv. Avg. Distance":
             plt.yscale("log")
