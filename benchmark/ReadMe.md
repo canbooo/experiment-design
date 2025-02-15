@@ -12,4 +12,4 @@ mapping the DoEs to different non-uniform spaces would result in the same DoE as
 methods due to the fixed random seeds. For mapping uniform probabilities to non-uniform design space, we use
 `generate_non_native_orthogonal_design.py`. Following, we run `evaluate_doe.py` to compute various DoE metrics that are
 implemented in `metrics.py`. Finally, we use `result_plots_tables.py` to generate the plots that we insert into our
-documentation.
+documentation. All generated data can be found at [this Google Drive link](https://drive.google.com/file/d/1dP03pGTrKO9AZ1t1Gx3YcSH-emcUJYE2/view?usp=drive_link).
