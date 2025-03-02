@@ -38,7 +38,7 @@ jobs:
         uses: actions/checkout@v3
       - name: Install poetry
         run: |
-          pip install poetry
+          pip install "poetry<2.1"
         shell: bash
       - name: Set GitHub Tag as Package Version
         run: |
