@@ -24,12 +24,15 @@ if __name__ == "__main__":
             "pyLHD",
         ]
     )
-    for metric_name in [
+
+    metric_names = [
         "Max. Correlation Error",
         "Mean Correlation Error",
         "Min. Pairwise Distance",
         "Inv. Avg. Distance",
-    ]:
+    ]
+
+    for metric_name in metric_names:
         plt.figure(figsize=(12, 7))
         plt.title("All distributions")
         sns.lineplot(df, x="dimension", y=metric_name, hue="algorithm")
@@ -43,12 +46,7 @@ if __name__ == "__main__":
             plt.yscale("log")
 
     uniform_df = df[df.doe_type.str.endswith("uniform")]
-    for metric_name in [
-        "Max. Correlation Error",
-        "Mean Correlation Error",
-        "Min. Pairwise Distance",
-        "Inv. Avg. Distance",
-    ]:
+    for metric_name in metric_names:
         plt.figure(figsize=(12, 7))
         plt.title("Uniform distribution")
         sns.lineplot(uniform_df, x="dimension", y=metric_name, hue="algorithm")
