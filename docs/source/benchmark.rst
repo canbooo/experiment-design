@@ -1,100 +1,17 @@
 .. |DoE| replace:: :abbr:`DoE (Design of Experiments)`
 .. |LHS| replace:: :abbr:`LHS (Latin Hypercube Sampling)`
 
-
-Benchmarking some Latin hypercube design libraries
+Benchmarking some Latin hypercube sampling libraries
 ''''''''''''''''''''''''''''''''''''''''''''''''''''''
 
-A non-exhaustive list of further |LHS| libraries available in python is given in `this repository <https://github.com/danieleongari/awesome-design-of-experiments>`_.
-In the following, :code:`experiment-design` is benchmarked against the the following libraries (or jump to `Results`_)
+As of February 2025, the :code:`experiment-design` library **outperforms all other tested |LHS| implementations**,
+achieving the **lowest correlation error** and **best space-filling properties**.
 
-- `pyDOE <https://github.com/danieleongari/awesome-design-of-experiments>`_, `pyDOE2 <https://github.com/clicumu/pyDOE2>`_,
-  `pyDOE3 <https://pydoe3.readthedocs.io/en/latest/>`_: These are often the first results when one searches for |DoE|
-  since the original version is one of the oldest libraries, that supported |DoE| generation in python. They focus on factorial
-  designs and their derivatives but also support |LHS| creation. pyDOE2 is a direct fork of pyDOE, that resolves some bugs and
-  introduced generalized subset design. It seems like there hasn't been a change to the |LHS| code but they support two
-  kinds of |LHS| objectives; :code:`maximin` to maximize the minimum distance and :code:`correlation` to minimize the maximum
-  correlation coefficient. In general, we will prefer to use the default settings as much as possible. However, since a
-  choice has to be made these objectives when using the :code:`lhs` function from these libraries, :code:`maximin` was
-  chosen for pyDOE and :code:`correlation` was chosen for pyDOE2. In pyDOE3, most of the code remains the same but authors
-  introduce a further objective with the alias :code:`lhsmu`, which was used in the benchmark. See the linked documentation
-  for further details.
-- `doepy <https://doepy.readthedocs.io/en/latest/>`_: doepy looks promising and it was exciting to see a function
-  called :code:`space_filling_lhs`. However, using this function leads to a unresolved reference error by the time of this
-  writing. Therefore, the plain :code:`lhs` function was using instead. Moreover, this library seemed to be the only one
-  natively supporting orthogonal sampling, i.e. |DoE| with non-uniform marginal distributions. However, passing distributions
-  to the function did not seem to have an effect. Therefore, we only generated uniform |DoE| and mapped those to non-uniform
-  distributions via `inverse transform sampling <https://en.wikipedia.org/wiki/Inverse_transform_sampling>`_ like all other
-  libraries. I am happy to recompute the results of this library if any of the issues are fixed.
-- `diversipy <https://diversipy.readthedocs.io/en/latest/index.html>`_: diversipy is especially useful due to their variety
-  of |DoE| metrics in the :code:`indicator` module. One of those (`average_inverse_dist <https://diversipy.readthedocs.io/en/latest/indicator.html>`_
-  was even inspiring enough to be included additionally in the benchmark metrics. :code:`cube.improved_latin_design` was
-  used to generate |LHS|.
-- `pyLHD <https://github.com/toledo60/pyLHD>`_: Being one of the older libraries, pyLHD implements a variety of |DoE| methods.
-  :code:`maximinLHD` was used in the benchmark as all other methods were limiting with respect to the choice of number of
-  dimensions and samples. Especially the flexibility regarding the number of samples is thought to be very important in
-  the modern times as it allows an efficient parallelization of computations or experiments using any number of sample
-  generators.
+Key advantages of :code:`experiment-design`:
 
-Note that besides the benchmark results, there are other good reasons to prefer `experiment-design` over the listed libraries.
-By the time of this writing, none of the libraries support
-
-- correlated variables
-- non-uniform distributions natively (one can always use inverse transform sampling but this deteriorates |DoE| quality as shown later.
-- extending |LHS| by adding new samples, that adhere to the |LHS| rules as long as this is possible.
-
-
-Methods and metrics
--------------------
-
-In general, 64 |DoE| were generated with each algorithm for each dimension, sample and distribution triplet. 4 distributions
-were tested from `scipy.stats` module:
-
-.. code:: python
-
-    stats.uniform(loc=0, scale=1),  # [0, 1]
-    stats.norm(loc=0.5, scale=1 / 6.180464612335626),  # [0, 1] > 95 %
-    stats.lognorm(0.448605225, scale=0.25),  # [0, 1] > 95%
-    stats.gumbel_r(loc=-2.81, scale=1.13),  # [-5, 5] > 95 %
-
-Following table represents the number of dimensions and the corresponding samples used for each distribution.
-
-.. list-table::
-    :header-rows: 1
-    :align: center
-
-    * - Dimensions
-      - Samples
-    * - 2
-      - 32, 64, 96, 128
-    * - 3
-      - 32, 64, 96, 128
-    * - 4
-      - 32, 64, 96, 128
-    * - 5
-      - 32, 64, 96, 128
-    * - 10
-      - 64, 96, 128, 256
-    * - 15
-      - 64, 96, 128, 256
-    * - 20
-      - 64, 96, 128, 256
-    * - 25
-      - 64, 96, 128, 256
-    * - 50
-      - 128, 256, 512
-    * - 75
-      - 128, 256, 512
-    * - 100
-      - 128, 256, 512
-
-In total, :code:`41 * 4 * 64 = 10496` results were generated for each algorithm. The reason behind the choise of powers
-of two is to support the most common use case, where a power of two number of CPUs or worker nodes are available on a
-compute cluster. As metrics, the maximum and mean correlation error as well as the minimum and average inverse pairwise
-distance were used. In order to prevent an unjust advantage, only non-correlated variables were considered. In case the
-tested library did not natively support non-uniform distributions, a uniform |DoE| between :math:`[0, 1]` was generated,
-which was used as probabilities for the `inverse transform sampling <https://en.wikipedia.org/wiki/Inverse_transform_sampling>`_
-method.
+* **Lowest correlation error** across all dimensions and sample sizes
+* **Best space-filling properties**, with higher minimum pairwise distance
+* **Only library** with native support for correlated variables, non-uniform distributions, and |LHS| extension
 
 Results
 -------
@@ -102,117 +19,214 @@ Results
 Correlation error
 =================
 
-The images below represent the mean and maximum correlation error results, grouped on dimensions and samples.
-Since they are errors, smaller values are better. Lines represent the average values of the metrics, whereas the areas
-represent the 95\% confidence intervals. For both of these metrics, :code:`experiment-design` is the clear winner
-when considering all distributions.
+The plots below show mean and maximum correlation error results, grouped by dimension and sample size.
+Since these are error metrics, lower values indicate better performance. Lines represent the average values of the metrics, whereas the areas
+represent the 95\% confidence intervals.
 
 
 .. image:: images/benchmark/max_correlation_error-dimension-all_distributions.png
     :align: left
     :width: 320px
-    :alt: Maximum correlation error results of all experiment designs over dimensions
+    :alt: Maximum correlation error over dimensions
 
 .. image:: images/benchmark/max_correlation_error-sample-all_distributions.png
     :align: right
     :width: 320px
-    :alt: Maximum correlation error results of all experiment designs over number of samples
+    :alt: Maximum correlation error over samples
 
 .. image:: images/benchmark/mean_correlation_error-dimension-all_distributions.png
     :align: left
     :width: 320px
-    :alt: Mean correlation error results of all experiment designs over dimensions
+    :alt: Mean correlation error over dimensions
 
 .. image:: images/benchmark/mean_correlation_error-sample-all_distributions.png
     :align: right
     :width: 320px
-    :alt: Mean correlation error results of all experiment designs over number of samples
+    :alt: Mean correlation error over samples
 
-Initially, it seems like the lacking native support of non-uniform distributions might have caused the huge difference.
-However, even if the results are restricted to the uniform case as given below, :code:`experiment-design` achieves
-a significantly smaller correlation error on average, especially in the lower dimensional settings.
-
+Even when restricting the analysis to uniform distributions as given below, :code:`experiment-design` consistently achieves
+lower correlation error, particularly in lower-dimensional settings.
 
 .. image:: images/benchmark/max_correlation_error-dimension-uniform_distribution.png
     :align: left
     :width: 320px
-    :alt: Maximum correlation error results of uniform experiment designs over dimensions
+    :alt: Maximum correlation error over dimensions for uniform |DoE|
 
 .. image:: images/benchmark/max_correlation_error-sample-uniform_distribution.png
     :align: right
     :width: 320px
-    :alt: Maximum correlation error results of uniform experiment designs over number of samples
+    :alt: Maximum correlation error over samples for uniform |DoE|
 
 .. image:: images/benchmark/mean_correlation_error-dimension-uniform_distribution.png
     :align: left
     :width: 320px
-    :alt: Mean correlation error results of uniform experiment designs over dimensions
+    :alt: Mean correlation error over dimensions for uniform |DoE|
 
 .. image:: images/benchmark/mean_correlation_error-sample-uniform_distribution.png
     :align: right
     :width: 320px
-    :alt: Mean correlation error results of uniform experiment designs over number of samples
+    :alt: Mean correlation error over samples for uniform |DoE|
 
 
 Pairwise distance
 =================
 
-Again, two distinct metrics are used, that measure the space-filling properties of the |DoE| using pairwise distances.
-For "min. pairwise distance", larger is better, whereas for the "inverse average distance", smaller is better.
+These metrics assess the space-filling properties of the |DoE| .
+
+- Higher minimum pairwise distance is better.
+- Lower inverse average distance is better.
+
 Again, lines represent the average values of the metrics, whereas the areas represent the 95\% confidence intervals.
-Comparing all |DoE|, :code:`experiment-design` achieves the best results by a significant margin.
 
 .. image:: images/benchmark/min_pairwise_distance-dimension-all_distributions.png
     :align: left
     :width: 320px
-    :alt: Minimum pairwise distance results of all experiment designs over dimensions
+    :alt: Minimum pairwise distance over dimensions
 
 .. image:: images/benchmark/min_pairwise_distance-sample-all_distributions.png
     :align: right
     :width: 320px
-    :alt: Minimum pairwise distance results of all experiment designs over number of samples
+    :alt: Minimum pairwise distance over samples
 
 .. image:: images/benchmark/inv_avg_distance-dimension-all_distributions.png
     :align: left
     :width: 320px
-    :alt: Inverse average distance results of all experiment designs over dimensions
+    :alt: Inverse average distance over dimensions
 
 .. image:: images/benchmark/inv_avg_distance-sample-all_distributions.png
     :align: right
     :width: 320px
-    :alt: Inverse average distance results of all experiment designs over number of samples
+    :alt: Inverse average distance over samples
 
 
-Restricting the analysis to the uniform distributions, the results become closer. Nevertheless, 95\% confidence bounds
-still do not intersect and :code:`experiment-design` defends its first place.
+Even when considering only uniform distributions as given below, :code:`experiment-design` maintains a significant advantage.
+
 
 .. image:: images/benchmark/min_pairwise_distance-dimension-uniform_distribution.png
     :align: left
     :width: 320px
-    :alt: Minimum pairwise distance results of uniform experiment designs over dimensions
+    :alt: Minimum pairwise distance over dimensions for uniform |DoE|
 
 .. image:: images/benchmark/min_pairwise_distance-sample-uniform_distribution.png
     :align: right
     :width: 320px
-    :alt: Minimum pairwise distance results of uniform experiment designs over number of samples
+    :alt: Minimum pairwise distance over samples for uniform |DoE|
 
 .. image:: images/benchmark/inv_avg_distance-dimension-uniform_distribution.png
     :align: left
     :width: 320px
-    :alt: Inverse average distance results of uniform experiment designs over dimensions
+    :alt: Inverse average distance over dimensions for uniform |DoE|
 
 .. image:: images/benchmark/inv_avg_distance-sample-uniform_distribution.png
     :align: right
     :width: 320px
-    :alt: Inverse average distance results of uniform experiment designs over number of samples
+    :alt: Inverse average distance over samples for uniform |DoE|
+
+
+Tested libraries
+----------------
+
+A non-exhaustive list of further |LHS| libraries available in python is given in `this repository <https://github.com/danieleongari/awesome-design-of-experiments>`_,
+which inspired this benchmark.
+
+- `pyDOE <https://github.com/danieleongari/awesome-design-of-experiments>`_, `pyDOE2 <https://github.com/clicumu/pyDOE2>`_,
+  `pyDOE3 <https://pydoe3.readthedocs.io/en/latest/>`_: These libraries are among the first search results when looking
+  for |DoE| tools, as the original pyDOE is one of the oldest Python libraries supporting |DoE| generation. They primarily
+  focus on factorial designs and their derivatives but also include |LHS| functionality.
+
+  - pyDOE2 is a direct fork of pyDOE, fixing some bugs and introducing generalized subset design. However, no changes were
+    made to the |LHS| code.
+  - These libraries support two |LHS| objectives: :code:`maximin` which maximizes the minimum distance and :code:`correlation` which minimizes
+    the maximum correlation coefficient. Since a choice is required when using the :code:`lhs` function, pyDOE was tested
+    with :code:`maximin`, while pyDOE2 was tested with :code:`correlation`.
+  - pyDOE3 introduces an additional |LHS| objective, :code:`lhsmu`, which was used in this benchmark. See the linked
+    documentation for further details.
+- `doepy <https://doepy.readthedocs.io/en/latest/>`_: This library looked promising, especially with a function called
+  :code:`space_filling_lhs`. However, using this function currently results in an unresolved reference error. Therefore,
+  the standard :code:`lhs` function was used instead.
+
+  - doepy appears to be the only library natively supporting orthogonal sampling (i.e., |DoE| with non-uniform marginal
+    distributions). However, passing distributions to its function does not seem to have any effect.
+  - As a result, only uniform |DoE| were generated and mapped to non-uniform distributions via `inverse transform sampling <https://en.wikipedia.org/wiki/Inverse_transform_sampling>`_,
+    just as with the other libraries.
+  - If these issues are resolved in future updates, the benchmark results can be recomputed.
+
+- `diversipy <https://diversipy.readthedocs.io/en/latest/index.html>`_: This library is particularly useful due to its
+  extensive |DoE| evaluation metrics in the indicator module. One of these,`average_inverse_dist <https://diversipy.readthedocs.io/en/latest/indicator.html>`_,
+  was compelling enough to be included as an additional benchmark metric.
+
+  - The function :code:`cube.improved_latin_design` was used to generate |LHS| samples.
+
+- `pyLHD <https://github.com/toledo60/pyLHD>`_: As one of the older |DoE| libraries, pyLHD implements various |LHS| methods.
+  However, most of them impose constraints on the number of dimensions and samples.
+
+  - The :code:`maximinLHD` function was used in this benchmark, as it provided the most flexibility in terms of sample size.
+  - The ability to generate flexible sample sizes is particularly important in modern computing, as it allows for efficient
+    parallelization across arbitrary numbers of CPU cores or worker nodes.
+
+Methods and metrics
+-------------------
+
+For each algorithm, 64 |DoE| were generated for every combination of dimension, sample size, and distribution.
+Four probability distributions from the `scipy.stats` module were tested:
+
+.. code:: python
+
+    stats.uniform(loc=0, scale=1),  # Uniform distribution [0, 1]
+    stats.norm(loc=0.5, scale=1 / 6.180464612335626),  # Normal distribution ~ [0, 1] (95% of values)
+    stats.lognorm(0.448605225, scale=0.25),  # Log-normal distribution ~ [0, 1] (95% of values)
+    stats.gumbel_r(loc=-2.81, scale=1.13),  # Gumbel distribution ~ [-5, 5] (95% of values)
+
+The table below shows the number of dimensions and corresponding sample sizes used for each distribution:
+
+.. list-table::
+    :header-rows: 1
+    :align: center
+
+    * - Dimensions
+      - Samples
+    * - 2, 3, 4, 5
+      - 32, 64, 96, 128
+    * - 10, 15, 20, 25
+      - 64, 96, 128, 256
+    * - 50, 75, 100
+      - 128, 256, 512
+
+In total, 41 different (dimension, sample size) combinations were tested, across 4 distributions and 64 trials each, yielding
+:math:`41 \times 4 \times 64 = 10,496` results per algorithm. Powers of two were chosen for sample sizes to align with
+common parallel computing setups, where computations are distributed across a power-of-two number of CPU cores or worker nodes.
+
+Evaluation metrics
+==================
+The following metrics were used:
+
+1. Correlation Error
+
+   - Maximum and mean correlation error (lower values are better).
+   - Only non-correlated variables were considered to ensure fair comparisons.
+
+2. Space-Filling Properties
+
+   - Minimum pairwise distance (higher is better).
+   - Inverse average distance (lower is better).
+
+For libraries lacking native support for non-uniform distributions, uniform |DoE| were generated first and then transformed
+using `inverse transform sampling <https://en.wikipedia.org/wiki/Inverse_transform_sampling>`_.
+
+
 
 
 Conclusion
 -----------
 
-Besides its unique features, :code:`experiment-design` currently seems to achieve the highest quality |LHS| and
-orthogonal sampling designs, both with respect to correlation error and space filling properties. The benchmark above
-clearly shows that even the closest contender achieves significantly worse results in at least 95\% of the tested cases.
-In future, this benchmark might be repeated as new libraries appear or older ones are improved. All of the code to
-reproduce this benchmark can be found at the `benchmark-2025-02 branch <https://github.com/canbooo/experiment-design/tree/benchmark-2025-02>`_
-Furthermore, all generated |DoE| can be found at `this google drive link <https://drive.google.com/drive/folders/15MDzLSSBNFNMDnj-dD6bBRWcC90k1kUj?usp=drive_link>`_
+:code:`experiment-design` consistently produces the highest-quality |LHS| and orthogonal sampling designs.
+This benchmark demonstrates that even the closest competing library performs significantly worse in at least 95\% of tested
+cases. The full benchmark code is available in the `benchmark-2025-02 branch <https://github.com/canbooo/experiment-design/tree/benchmark-2025-02>`_,
+and all generated |DoE| can be found `here <https://drive.google.com/drive/folders/15MDzLSSBNFNMDnj-dD6bBRWcC90k1kUj?usp=drive_link>`_
+
+Beyond benchmark results, there are additional reasons to prefer :code:`experiment-design` over the listed libraries.
+As of this writing, none of these libraries natively support:
+
+- Correlated variables,
+- Non-uniform distributions,
+- Extending |LHS| by adding new samples while preserving |LHS| properties.
