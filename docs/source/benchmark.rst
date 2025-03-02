@@ -6,7 +6,7 @@ Benchmarking some Latin hypercube design libraries
 ''''''''''''''''''''''''''''''''''''''''''''''''''''''
 
 A non-exhaustive list of further |LHS| libraries available in python is given in `this repository <https://github.com/danieleongari/awesome-design-of-experiments>`_.
-In the following, :code:`experiment-design` is benchmarked against the the following libraries
+In the following, :code:`experiment-design` is benchmarked against the the following libraries (or jump to `Results`_)
 
 - `pyDOE <https://github.com/danieleongari/awesome-design-of-experiments>`_, `pyDOE2 <https://github.com/clicumu/pyDOE2>`_,
   `pyDOE3 <https://pydoe3.readthedocs.io/en/latest/>`_: These are often the first results when one searches for |DoE|
