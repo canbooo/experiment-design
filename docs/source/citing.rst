@@ -1,3 +1,5 @@
+.. |LHS| replace:: :abbr:`LHS (Latin Hypercube Sampling)`
+
 Citing
 ''''''''''
 

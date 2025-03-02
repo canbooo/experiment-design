@@ -28,6 +28,7 @@ cases and aims to provide a space-filling designs with minimal correlation error
 
    quickstart
    orthogonal_sampling
+   benchmark
    api_reference
    citing
    contribution
