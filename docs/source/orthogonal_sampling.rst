@@ -62,7 +62,7 @@ but since we are show casing the capabilities of :code:`experiment-design`, let'
 .. image:: images/os_lhs_init.png
     :align: center
 
-There are a few important details in the abov.. code so let's walk line by line. After importing the necessary modules,
+There are a few important details in the above code so let's walk line by line. After importing the necessary modules,
 we first set a random seed. This is important for reproducibility. Given the same inputs and seed, we will always
 generate the same design on the same machine. Next, we define a two dimensional parameter space (:class:`.ParameterSpace`)
 within the bounds :math:`[0, 1]^2`. In general, bounds need not be equal. They can be any finite values, provided the lower
