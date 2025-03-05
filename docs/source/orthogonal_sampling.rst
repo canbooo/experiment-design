@@ -301,7 +301,7 @@ in higher dimensions. Analytically, we know that :math:`\mu_Y = 2d`, where :math
     :align: center
 
 .. warning::
-    Note that th.. code above may take a long time to run. The reason behind this is the number of optimization steps
+    Note that the code above may take a long time to run. The reason behind this is the number of optimization steps
     taken by :class:`.OrthogonalSamplingDesigner` especially in lower sample setting (:math:`\leq 128`) as the optimization has a
     high impact on the quality of the resulting |DoE|. You can choose a smaller :code:`step` value
     (the default is 20000 for :code:`sample_size` :math:`\leq 128` and `2000` otherwise) or even set it to 1 or less to avoid
