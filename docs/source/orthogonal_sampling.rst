@@ -71,7 +71,7 @@ Following, we initiate an :class:`.OrthogonalSamplingDesigner`
 with the parameter. :code:`inter_bin_randomness=0.`. This controls the randomness of the placement of samples within the
 bins. A value of 0.0 places the samples exactly in the middle of the bins, whereas a value of 0.8 (default) would lead to
 placing samples anywhere between :math:`[-0.4 \delta, 0.4 \delta]` within the bin, where :math:`\delta` is the bin size,
-here :math:`\delta=1/8=0.125`. Finally, we generate a doe using only 1 step, i.e. skipping any optimization for now, that we
+here :math:`\delta=1/8=0.125`. Finally, we generate a |DoE| using only 1 step, i.e. skipping any optimization for now, that we
 would do normally and plot the result.
 
 Final step is not mandatory, but it improves the |DoE| quality a lot, as proposed by `Joseph et al. (2008) <https://www3.stat.sinica.edu.tw/statistica/oldpdf/A18n17.pdf>`_:
