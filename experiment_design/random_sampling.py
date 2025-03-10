@@ -109,7 +109,7 @@ def sample_from(
     Sample from the distributions of the variables.
 
     :param space: Determines the dimensions of the resulting sample.
-    :param sample_size: the number of points to be created.
+    :param sample_size: The number of points to be created.
     :param exact_correlation: If True, second moment transformation will be used, which may not respect the finite
     bounds of the marginal distributions. Otherwise, Iman-Connover method will be used, which may yield imprecise
     correlation matrices.

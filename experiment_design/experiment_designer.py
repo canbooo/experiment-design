@@ -39,7 +39,7 @@ class ExperimentDesigner(abc.ABC):
         Create or extend a |DoE| .
 
         :param space: Determines the dimensions of the resulting sample.
-        :param sample_size: the number of points to be created.
+        :param sample_size: The number of points to be created.
         :param old_sample: Old |DoE| matrix with shape (old_sample_size, space.dimensions). If provided,
             it will be extended with sample_size new points, otherwise a new |DoE| will be created.
             In both cases, only the new points will be returned.

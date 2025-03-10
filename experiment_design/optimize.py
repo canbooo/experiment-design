@@ -55,11 +55,11 @@ def simulated_annealing_by_perturbation(
     same.
 
     :param doe: |DoE| matrix with shape (sample_size, len(variables)).
-    :param scorer: A scoring function for the doe. It will be maximized.
+    :param scorer: Scoring function for the doe. It will be maximized.
     :param steps: Number of steps for the annealing algorithm.
     :param cooling_rate: Annealing parameter to decay temperature.
     :param temperature: Annealing temperature.
-    :param max_steps_without_improvement: A limit on the maximum steps to take for exploration before setting the
+    :param max_steps_without_improvement: Limit on the maximum steps to take for exploration before setting the
         reference matrix to the last best value.
     :return: Optimized |DoE| matrix
 
