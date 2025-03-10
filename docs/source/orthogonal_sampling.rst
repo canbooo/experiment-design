@@ -46,7 +46,7 @@ We can visualize this as follows:
 .. image:: images/os_lhs_grid.png
     :align: center
 
-Next, we place each sample such that each bin is occupied only ones in each dimension. This is quite easy to implement,
+Next, we place each sample such that each bin is occupied only once in each dimension. This is quite easy to implement,
 but since we are show casing the capabilities of :code:`experiment-design`, let's use it here.
 
 .. code:: python
@@ -54,24 +54,24 @@ but since we are show casing the capabilities of :code:`experiment-design`, let'
     from experiment_design import create_continuous_uniform_space, OrthogonalSamplingDesigner
 
     np.random.seed(1337)
-    space = create_continuous_uniform_space([0., 0], [1., 1.])
-    designer = OrthogonalSamplingDesigner(inter_bin_randomness=0.)
+    space = create_continuous_uniform_space([0.0, 0.0], [1., 1.])
+    designer = OrthogonalSamplingDesigner(inter_bin_randomness=0.0)
     doe = designer.design(space, sample_size=8, steps=1)
     plt.scatter(doe[:, 0], doe[:, 1], label="Init. design")
 
 .. image:: images/os_lhs_init.png
     :align: center
 
-There are a few important details in the abov.. code so let's walk line by line. After importing the necessary modules,
+There are a few important details in the above code so let's walk line by line. After importing the necessary modules,
 we first set a random seed. This is important for reproducibility. Given the same inputs and seed, we will always
 generate the same design on the same machine. Next, we define a two dimensional parameter space (:class:`.ParameterSpace`)
 within the bounds :math:`[0, 1]^2`. In general, bounds need not be equal. They can be any finite values, provided the lower
 bound for a variable is smaller than its corresponding upper bound.
 Following, we initiate an :class:`.OrthogonalSamplingDesigner`
 with the parameter. :code:`inter_bin_randomness=0.`. This controls the randomness of the placement of samples within the
-bins. A value of 0. places the samples exactly in the middle of the bins, whereas a value of 0.8 (default) would lead to
+bins. A value of 0.0 places the samples exactly in the middle of the bins, whereas a value of 0.8 (default) would lead to
 placing samples anywhere between :math:`[-0.4 \delta, 0.4 \delta]` within the bin, where :math:`\delta` is the bin size,
-here :math:`1/8=0.125`. Finally, we generate a doe using only 1 step, i.e. skipping any optimization for now, that we
+here :math:`\delta=1/8=0.125`. Finally, we generate a |DoE| using only 1 step, i.e. skipping any optimization for now, that we
 would do normally and plot the result.
 
 Final step is not mandatory, but it improves the |DoE| quality a lot, as proposed by `Joseph et al. (2008) <https://www3.stat.sinica.edu.tw/statistica/oldpdf/A18n17.pdf>`_:
