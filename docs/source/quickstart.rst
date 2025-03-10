@@ -22,7 +22,7 @@ Create and extend experiment designs
 Let's first create a Latin hypercube sampling (|LHS|). We will discuss later why it is superior to random sampling
 (:doc:`Learn more about |LHS| and orthogonal sampling here  <orthogonal_sampling>`). We will first define
 a :class:`.ParameterSpace` with uniform distribution using the function :code:`create_continuous_uniform_space` and
-then use the :class:`.OrthogonalSamplingDesigner` class to generate the |DoE| and plot the result.
+then use the :class:`.OrthogonalSamplingDesigner` class to generate the Design of Experiments (|DoE|) and plot the result.
 
 .. code:: python
 
