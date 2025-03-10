@@ -46,7 +46,7 @@ We can visualize this as follows:
 .. image:: images/os_lhs_grid.png
     :align: center
 
-Next, we place each sample such that each bin is occupied only ones in each direction. This is quite easy to implement,
+Next, we place each sample such that each bin is occupied only ones in each dimension. This is quite easy to implement,
 but since we are show casing the capabilities of :code:`experiment-design`, let's use it here.
 
 .. code:: python
