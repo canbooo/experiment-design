@@ -16,7 +16,7 @@ from experiment_design.variable import ContinuousVariable, DiscreteVariable
 class ParameterSpace:
     """A container of multiple variables defining a parameter space.
 
-    :param variables: list of variables or marginal distributions that define the marginal parameters
+    :param variables: List of variables or marginal distributions that define the marginal parameters
     :param correlation: A float or asymmetric matrix with shape (len(variables), len(variables)), representing the
         linear dependency between the dimensions. If a float is passed, all non-diagonal entries of the unit matrix will
         be set to this value.
@@ -145,7 +145,7 @@ def create_discrete_uniform_space(
     """
     Given sets of possible values, create corresponding discrete variables with equal probability of each value.
 
-    :param discrete_sets: list of possible values for each variable
+    :param discrete_sets: List of possible values for each variable
     :return: Parameter space consisting of discrete uniform variables with the same size as the discrete_sets
     """
     variables = []
