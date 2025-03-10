@@ -16,7 +16,7 @@ class Scorer(Protocol):
         A scoring function to evaluate an experiment design quality. Larger values are better,
         i.e. this will be maximized.
 
-        :param doe: Design of experiments consisting of candidate samples with shape (n_sample, n_dim).
+        :param doe: |DoE| consisting of candidate samples with shape (n_sample, n_dim).
         :return: score of the DoE.
         """
 
@@ -74,7 +74,7 @@ class MaxCorrelationScorerFactory:
         and the target_correlation.
 
         :param space: Dimensions of the design space.
-        :param sample_size: number of candidate points to be scored.
+        :param sample_size: The number of candidate points to be scored.
         :param old_sample: If passed, represents the matrix of points in an older design of experiments with shape
             (old_sample_size, space.dimensions). Depending on self.local, some or all of these will be appended to the
             candidate points before computing the correlation error.
@@ -123,7 +123,7 @@ class PairwiseDistanceScorerFactory:
         Create a scorer, that computes the minimum pairwise distance between sampling points.s
 
         :param space: Dimensions of the design space.
-        :param sample_size: number of candidate points to be scored.
+        :param sample_size: The number of candidate points to be scored.
         :param old_sample: If passed, represents the matrix of points in an older design of experiments with shape
             (old_sample_size, len(variables)). Depending on self.local, some or all of these will be appended to the
             candidate points before computing the correlation error.

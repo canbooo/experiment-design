@@ -46,7 +46,7 @@ We can visualize this as follows:
 .. image:: images/os_lhs_grid.png
     :align: center
 
-Next, we place each sample such that each bin is occupied only once in each direction. This is quite easy to implement,
+Next, we place each sample such that each bin is occupied only once in each dimension. This is quite easy to implement,
 but since we are show casing the capabilities of :code:`experiment-design`, let's use it here.
 
 .. code:: python
@@ -301,7 +301,7 @@ in higher dimensions. Analytically, we know that :math:`\mu_Y = 2d`, where :math
     :align: center
 
 .. warning::
-    Note that the code above may take a long time to run. The reason behind this is the number of optimization steps
+    Note that th.. code above may take a long time to run. The reason behind this is the number of optimization steps
     taken by :class:`.OrthogonalSamplingDesigner` especially in lower sample setting (:math:`\leq 128`) as the optimization has a
     high impact on the quality of the resulting |DoE|. You can choose a smaller :code:`step` value
     (the default is 20000 for :code:`sample_size` :math:`\leq 128` and `2000` otherwise) or even set it to 1 or less to avoid
