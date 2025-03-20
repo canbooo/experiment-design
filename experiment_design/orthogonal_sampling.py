@@ -172,6 +172,8 @@ def create_orthogonal_design(
             space.dimensions, sample_size, inter_bin_randomness=inter_bin_randomness
         )
         doe = space.value_of(probabilities)
+        if space.dimensions == 1:
+            return doe
         try:
             return iman_connover_transformation(doe, space.correlation)
         except np.linalg.LinAlgError as exc:
