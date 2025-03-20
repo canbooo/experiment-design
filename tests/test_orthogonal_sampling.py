@@ -27,7 +27,7 @@ class TestOrthogonalSamplingDesigner:
     def get_instance():
         return module_under_test.OrthogonalSamplingDesigner()
 
-    def test_design(self, distributions_to_test, current_correlation_matrix):
+    def test_design(self, distributions_to_test, current_correlation_matrix) -> None:
         np.random.seed(1337)
         for dist1, dist2 in itertools.combinations(distributions_to_test, 2):
             space = variable.ParameterSpace(
@@ -46,3 +46,9 @@ class TestOrthogonalSamplingDesigner:
             assert np.isclose(
                 np.corrcoef(doe3, rowvar=False), current_correlation_matrix, atol=5e-2
             ).all()
+
+    def test_design_1d(self) -> None:
+        space = variable.ParameterSpace([stats.norm()])
+        instance = self.get_instance()
+        doe = instance.design(space, sample_size=256)
+        assert doe.shape == (256, 1)
