@@ -166,8 +166,9 @@ def create_discrete_uniform_space(
                 # Check https://stackoverflow.com/questions/19837486/lambda-in-a-loop
                 # for a description as this is expected python behaviour.
                 value_mapper=lambda x, values=sorted(discrete_set): values[int(x)],
-                inverse_value_mapper=lambda x,
-                values=sorted(discrete_set): values.index(x),
+                inverse_value_mapper=lambda x, values=sorted(discrete_set): (
+                    values.index(x)
+                ),
             )
         )
     return ParameterSpace(variables)
